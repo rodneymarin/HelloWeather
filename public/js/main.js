@@ -1,0 +1,1 @@
+console.log('HelloWeather bootstrap placeholder — replaced in Task 10')
