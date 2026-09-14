@@ -3,6 +3,8 @@ import assert from 'node:assert/strict'
 import { createApp } from '../src/app.js'
 import { onecallFixture } from './fixtures/onecall.js'
 
+const IP_PLACE = { name: 'Maracaibo', state: 'Estado Zulia', country: 'VE', lat: 10.64, lon: -71.61 }
+
 function start(app) {
   return new Promise((resolve) => {
     const server = app.listen(0, () => {
@@ -124,4 +126,29 @@ test('/api/geocode reverse-resolves by coordinates', async () => {
   assert.equal(res.status, 200)
   const body = await res.json()
   assert.deepEqual(body, [{ name: 'Maracaibo', lat: 10.66, lon: -71.61 }])
+})
+
+test('/api/location resolves a place from the client IP', async () => {
+  const app = createApp({
+    client: fakeClient(),
+    ipLocator: { resolve: async () => IP_PLACE },
+    config: { port: 0, apiKey: 'k', defaultLocation: 'Maracaibo' },
+  })
+  const s = await start(app)
+  const res = await fetch(`${s.baseUrl}/api/location`)
+  assert.equal(res.status, 200)
+  assert.deepEqual(await res.json(), IP_PLACE)
+  await new Promise((resolve) => s.server.close(resolve))
+})
+
+test('/api/location returns 502 when the IP provider fails', async () => {
+  const app = createApp({
+    client: fakeClient(),
+    ipLocator: { resolve: async () => { throw new Error('boom') } },
+    config: { port: 0, apiKey: 'k', defaultLocation: 'Maracaibo' },
+  })
+  const s = await start(app)
+  const res = await fetch(`${s.baseUrl}/api/location`)
+  assert.equal(res.status, 502)
+  await new Promise((resolve) => s.server.close(resolve))
 })

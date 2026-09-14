@@ -25,3 +25,7 @@ export function fetchGeocode(q) {
 export function fetchReverseGeocode({ lat, lon }) {
   return requestJson(`/api/geocode?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`)
 }
+
+export function fetchIpLocation() {
+  return requestJson('/api/location')
+}

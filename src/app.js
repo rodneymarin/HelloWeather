@@ -2,12 +2,13 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import { createOpenWeatherClient } from './openweather.js'
+import { createIpLocator } from './iploc.js'
 import { normalizeWeather } from './normalize.js'
 import { getConfig } from '../config.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-export function createApp({ client = createOpenWeatherClient({}), config = getConfig() } = {}) {
+export function createApp({ client = createOpenWeatherClient({}), ipLocator = createIpLocator(), config = getConfig() } = {}) {
   const app = express()
   const cache = new Map()
 
@@ -16,6 +17,17 @@ export function createApp({ client = createOpenWeatherClient({}), config = getCo
 
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true })
+  })
+
+  app.get('/api/location', async (req, res) => {
+    const clientIp = (req.ip || req.socket?.remoteAddress || '').replace(/^::ffff:/, '')
+    try {
+      const place = await ipLocator.resolve(clientIp)
+      if (!place) return res.status(502).json({ error: 'IP location unavailable' })
+      res.json(place)
+    } catch {
+      res.status(502).json({ error: 'IP location unavailable' })
+    }
   })
 
   app.get('/api/geocode', async (req, res) => {

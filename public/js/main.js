@@ -1,5 +1,5 @@
 import { loadState, saveState, resolveTheme } from './state.js'
-import { fetchWeather, fetchGeocode, fetchReverseGeocode } from './api.js'
+import { fetchWeather, fetchGeocode, fetchReverseGeocode, fetchIpLocation } from './api.js'
 import { renderHero, renderNoData } from './ui/hero.js'
 import { renderHourly } from './ui/hourly.js'
 import { renderDaily } from './ui/daily.js'
@@ -156,29 +156,42 @@ function messageTo(list, text) {
   list.innerHTML = `<li class="muted">${text}</li>`
 }
 
+function placeLabel(place) {
+  return [place.name, place.state, place.country].filter(Boolean).join(', ') || place.name
+}
+
+function loadPlaceWeather(place, coords) {
+  const payload = coords
+    ? { lat: coords.lat, lon: coords.lon, name: placeLabel(place) }
+    : { lat: place.lat, lon: place.lon, name: placeLabel(place) }
+  loadWeather(payload)
+  closeOverlay()
+}
+
 async function useMyLocation() {
   const list = document.getElementById('search-results')
   if (!list) return
-  if (!('geolocation' in navigator)) {
-    messageTo(list, 'Geolocation is not available.')
-    return
-  }
-  messageTo(list, 'Detecting your location…')
-  navigator.geolocation.getCurrentPosition(
-    async (pos) => {
+
+  if ('geolocation' in navigator) {
+    messageTo(list, 'Detecting your location…')
+    try {
+      const pos = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject))
       const { latitude, longitude } = pos.coords
-      try {
-        const place = (await fetchReverseGeocode({ lat: latitude, lon: longitude }))[0]
-        if (!place) throw new Error('no place')
-        const label = [place.name, place.state, place.country].filter(Boolean).join(', ') || place.name
-        loadWeather({ lat: latitude, lon: longitude, name: label })
-        closeOverlay()
-      } catch {
-        messageTo(list, 'Could not resolve your location.')
-      }
-    },
-    () => messageTo(list, 'Location permission denied.'),
-  )
+      const place = (await fetchReverseGeocode({ lat: latitude, lon: longitude }))[0]
+      if (place) return loadPlaceWeather(place, { lat: latitude, lon: longitude })
+    } catch {
+      /* geolocation blocked or failed → fall back to IP location */
+    }
+  }
+
+  messageTo(list, 'Locating you by IP…')
+  try {
+    const place = await fetchIpLocation()
+    if (!place) throw new Error('no place')
+    loadPlaceWeather(place)
+  } catch {
+    messageTo(list, 'Could not determine your location.')
+  }
 }
 
 document.addEventListener('click', (e) => {
