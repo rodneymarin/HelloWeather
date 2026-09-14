@@ -1,24 +1,45 @@
 # HelloWeather
 
-Local weather service with a web GUI. Serves a vanilla JS frontend from
-Express and proxies OpenWeather into a normalized metric model.
+A local weather dashboard with a vanilla JS frontend served by Express,
+backed by OpenWeather data normalized into a small metric model.
+
+## Features
+
+- Current conditions, feels-like, humidity, wind, UV and more in the hero
+- Hourly outlook with wind and gust speeds
+- Daily forecast (5 days) with temperature range, rain, UV severity and
+  moon phase
+- Search by city name or coordinates
+- "Use my current location" via browser geolocation, with an IP-based
+  fallback
+- Light / dark / system themes
+- Favorites for quick switching between places
+- Works offline with cached data (shown with an offline banner)
 
 ## Requirements
 
 - Node.js >= 18
 
-## Setup
+## Install
 
 ```bash
+git clone <repo-url> helloweather
+cd helloweather
 npm install
-cp .env.example .env   # optional; API key falls back to the one in CONCEPT.md
 ```
 
 ## Run
 
 ```bash
-npm start          # http://localhost:3000 (override with PORT env var)
+npm start          # http://localhost:2829
 npm run dev        # auto-restart on change
+```
+
+The default port is **2829**. To use a different port, set the `PORT`
+environment variable, for example:
+
+```bash
+PORT=8080 npm start
 ```
 
 ## Test
@@ -27,13 +48,27 @@ npm run dev        # auto-restart on change
 npm test           # node --test
 ```
 
+## Project structure
+
+```
+public/            Static frontend (vanilla JS, no build step)
+  js/              app logic, state, API client, UI modules
+  index.html       single page host
+src/               Server-side modules
+  app.js           Express app and API routes
+  openweather.js   OpenWeather client
+  normalize.js     normalizes provider responses
+  iploc.js         IP-based location lookup
+config.js          reads config from the environment / .env file
+server.js          entry point
+test/              node --test suite (fixtures under test/fixtures)
+```
+
 ## Data source
 
-OpenWeather. Primary provider is One Call 3.0 (`/data/3.0/onecall`,
-1-hour granularity incl. UV index). If the API key has no One Call
-access, the service silently falls back to Current Weather
-(`/data/2.5/weather`) + Forecast 5-day/3-hour (`/data/2.5/forecast`);
-in that mode UV is omitted and hourly steps are 3-hour. Moon phase is
-computed locally. When OpenWeather is unreachable, the last cached
-result per location is served with a `stale` flag and shown with an
-offline banner.
+Weather comes from OpenWeather. The primary provider is One Call 3.0
+(1-hour granularity, includes UV index). If that API access is not
+available for the account, the service silently falls back to Current
+Weather + Forecast 5-day/3-hour (3-hour steps, no UV). Moon phase is
+computed locally. When the provider is unreachable, the last cached
+result for the location is served with an offline banner.
