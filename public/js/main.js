@@ -1,7 +1,7 @@
 import { loadState, saveState, resolveTheme } from './state.js'
 import { fetchWeather, fetchGeocode } from './api.js'
 import { renderHero, renderNoData } from './ui/hero.js'
-import { renderHourly, scrollIndicator } from './ui/hourly.js'
+import { renderHourly } from './ui/hourly.js'
 import { renderDaily } from './ui/daily.js'
 import { renderHeader } from './ui/header.js'
 import { skeleton } from './ui/skeleton.js'
@@ -32,19 +32,6 @@ const els = {
   connBanner: document.getElementById('conn-banner'),
 }
 
-function wireScrollIndicator() {
-  const track = document.querySelector('.hourly-track')
-  const thumb = track?.querySelector('.hourly-scroll-thumb')
-  if (!track || !thumb) return
-  const update = () => {
-    const s = scrollIndicator(track.clientWidth, track.scrollWidth, track.scrollLeft)
-    thumb.style.width = `${s.widthPct}%`
-    thumb.style.left = `${s.leftPct}%`
-  }
-  track.addEventListener('scroll', update)
-  update()
-}
-
 function render() {
   renderHeader(state, els)
   if (!state.data) {
@@ -63,7 +50,6 @@ function render() {
   els.hero.innerHTML = (model.stale ? offlineBanner(model) : '') + renderHero(model)
   els.hourly.innerHTML = renderHourly(model)
   els.daily.innerHTML = renderDaily(model)
-  wireScrollIndicator()
 }
 
 function updateFavoriteButton() {

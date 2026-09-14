@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { buildTempArea, scrollIndicator } from '../public/js/ui/hourly.js'
+import { buildTempArea } from '../public/js/ui/hourly.js'
 
 const ITEMS = [
   { dt: 1757844930, tempC: 30, icon: '04d', windKmh: 18, windDeg: 90, gustKmh: 30, pop: 0.2 },
@@ -34,15 +34,9 @@ test('buildTempArea positions temps as area percentages aligned with the line', 
   assert.deepEqual(tops, ['30.00', '80.00'])
 })
 
-test('scrollIndicator hides when content fits', () => {
-  assert.deepEqual(scrollIndicator(800, 600, 100), { widthPct: 0, leftPct: 0 })
-})
-
-test('scrollIndicator maps visible fraction and scroll progress', () => {
-  assert.deepEqual(scrollIndicator(500, 1000, 0), { widthPct: 50, leftPct: 0 })
-  assert.deepEqual(scrollIndicator(500, 1000, 500), { widthPct: 50, leftPct: 50 })
-})
-
-test('scrollIndicator clamps very small visible fractions', () => {
-  assert.deepEqual(scrollIndicator(100, 5000, 0), { widthPct: 12, leftPct: 0 })
+test('buildTempArea extends the curve ends near the block edges', () => {
+  const html = buildTempArea(ITEMS.slice(0, 2), 'metric')
+  const d = html.match(/<path d="([^"]+)" \/>/)[1]
+  assert.match(d, /^M 1\.50 /)
+  assert.match(d, / 98\.50 \d+\.\d+$/)
 })

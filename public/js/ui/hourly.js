@@ -23,7 +23,9 @@ function pointAt(items, i) {
 
 function smoothPath(points) {
   if (points.length < 2) return ''
-  const p = points
+  const p = points.map((pt) => ({ ...pt }))
+  p[0].x = 1.5
+  p[p.length - 1].x = 98.5
   let d = `M ${p[0].x.toFixed(2)} ${p[0].y.toFixed(2)}`
   for (let i = 0; i < p.length - 1; i++) {
     const p0 = p[Math.max(i - 1, 0)]
@@ -37,14 +39,6 @@ function smoothPath(points) {
     d += ` C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`
   }
   return d
-}
-
-export function scrollIndicator(client, total, scrollLeft) {
-  if (total <= client || client <= 0) return { widthPct: 0, leftPct: 0 }
-  const widthPct = Math.max(12, (client / total) * 100)
-  const maxLeftPct = 100 - widthPct
-  const progress = Math.min(1, Math.max(0, scrollLeft / (total - client)))
-  return { widthPct, leftPct: progress * maxLeftPct }
 }
 
 export function buildTempArea(items, units = 'metric') {
@@ -77,5 +71,5 @@ export function renderHourly(model, units = 'metric') {
 
   return `
     <div class="section-title">Hourly</div>
-    <div class="hourly-track"><div class="hourly-track-inner">${cols}<div class="temp-area">${buildTempArea(items, units)}</div></div><div class="hourly-scrollbar"><div class="hourly-scroll-thumb"></div></div></div>`
+    <div class="hourly-track"><div class="hourly-track-inner">${cols}<div class="temp-area">${buildTempArea(items, units)}</div></div></div>`
 }
