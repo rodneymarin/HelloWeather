@@ -60,6 +60,11 @@ body {
 
 #app { max-width: 900px; margin: 0 auto; padding: 0 0 24px; }
 
+.updated-bar {
+  text-align: center; font-size: 0.62rem; color: var(--muted);
+  padding: 4px 0 0; opacity: 0.7;
+}
+
 header#app-header {
   position: sticky; top: 0; z-index: 10;
   display: flex; align-items: center; justify-content: space-between;
@@ -91,8 +96,15 @@ section { margin: 8px 12px; }
   display: flex; flex-direction: column; gap: 16px;
 }
 
-.hero-top { display: flex; justify-content: space-between; align-items: flex-start; }
-.hero-temp { font-size: 4.2rem; font-weight: 300; line-height: 1; }
+.hero-sun-times {
+  display: flex; justify-content: center; gap: 24px;
+  font-size: 0.82rem; color: var(--muted);
+}
+.hero-sun-times span { display: inline-flex; align-items: center; gap: 6px; }
+.hero-sun-times .wicon { color: var(--sun); }
+
+.hero-top { display: flex; justify-content: space-between; align-items: center; }
+.hero-temp { font-size: 2.94rem; font-weight: 300; line-height: 1; }
 .hero-day { text-align: right; display: flex; flex-direction: column; line-height: 1.4; }
 .hero-day-name { font-size: 1.15rem; font-weight: 600; }
 .hero-day-range { color: var(--muted); }
@@ -113,16 +125,6 @@ section { margin: 8px 12px; }
 .hero-condition { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
 .hero-condition .wicon { width: 56px; height: 56px; }
 .hero-condition p { font-size: 0.95rem; color: var(--muted); }
-
-.hero-bottom {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: 14px; border-top: 1px solid var(--panel-2); padding-top: 12px;
-  font-size: 0.85rem; color: var(--muted);
-}
-.hero-bottom span { display: inline-flex; align-items: center; gap: 6px; }
-.hero-bottom span:not(:last-child) { margin-right: 20px; }
-.hero-bottom .wicon { color: var(--sun); }
-.updated { margin-left: auto; }
 
 .hourly-track {
   position: relative; overflow-x: auto;
@@ -189,9 +191,10 @@ footer#app-footer { text-align: center; color: var(--muted); font-size: 0.72rem;
 .toast {
   position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 120%);
   background: var(--toast-bg); color: var(--text); padding: 10px 16px; border-radius: 10px;
-  transition: transform 0.25s ease; z-index: 50; max-width: 90vw;
+  transition: transform 0.25s ease, visibility 0.25s ease; z-index: 50; max-width: 90vw;
+  visibility: hidden; pointer-events: none;
 }
-.toast.show { transform: translate(-50%, 0); }
+.toast.show { transform: translate(-50%, 0); visibility: visible; pointer-events: auto; }
 .toast-error { background: var(--toast-error-bg); border: 1px solid var(--bad); }
 
 .offline-banner { background: var(--offline-bg); border: 1px solid var(--offline-border); color: var(--offline-text); padding: 8px 12px; border-radius: 10px; margin: 0 0 8px; font-size: 0.85rem; }

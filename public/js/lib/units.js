@@ -17,7 +17,7 @@ export function mmToIn(mm) {
 
 export function formatTemp(celsius, system = 'metric') {
   const value = system === 'imperial' ? cToF(celsius) : celsius
-  return `${Math.round(value)}°`
+  return `${Math.round(value)}${UNIT_SYSTEMS[system].temp}`
 }
 
 export function formatSpeed(kmh, system = 'metric') {

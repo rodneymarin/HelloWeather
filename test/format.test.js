@@ -4,8 +4,8 @@ import { formatTempRange, formatPrecipProb, compassLabel } from '../public/js/li
 import { uvClass } from '../public/js/lib/uv.js'
 
 test('formatTempRange renders min and max', () => {
-  assert.equal(formatTempRange(28, 35, 'metric'), '28° 35°')
-  assert.equal(formatTempRange(0, 100, 'imperial'), '32° 212°')
+  assert.equal(formatTempRange(28, 35, 'metric'), '28°C – 35°C')
+  assert.equal(formatTempRange(0, 100, 'imperial'), '32°F – 212°F')
 })
 
 test('formatPrecipProb renders mm and percent', () => {

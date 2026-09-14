@@ -10,6 +10,7 @@ import { offlineBanner, connectionBannerHtml } from './ui/banner.js'
 import { showToast } from './ui/toast.js'
 import { searchOverlayHtml, renderSearchResults, emptySearchResultsHtml } from './ui/search.js'
 import { drawerHtml } from './ui/drawer.js'
+import { updatedLabel } from './lib/datetime.js'
 
 const state = loadState()
 const systemDark = typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches
@@ -31,6 +32,7 @@ const els = {
   overlay: document.getElementById('overlay'),
   drawer: document.getElementById('drawer'),
   connBanner: document.getElementById('conn-banner'),
+  updatedBar: document.getElementById('updated-bar'),
 }
 
 function render() {
@@ -45,12 +47,14 @@ function render() {
       els.hourly.innerHTML = ''
       els.daily.innerHTML = ''
     }
+    els.updatedBar.innerHTML = ''
     return
   }
   const model = state.data
   els.hero.innerHTML = (model.stale ? offlineBanner(model) : '') + renderHero(model)
   els.hourly.innerHTML = renderHourly(model)
   els.daily.innerHTML = renderDaily(model)
+  els.updatedBar.innerHTML = `<span>Updated: ${updatedLabel(model.updatedAt / 1000)}</span>`
 }
 
 function updateFavoriteButton() {

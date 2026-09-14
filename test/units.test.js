@@ -17,11 +17,11 @@ test('mmToIn converts mm to inches', () => {
 })
 
 test('formatTemp rounds and appends degree mark', () => {
-  assert.equal(formatTemp(30.4, 'metric'), '30°')
-  assert.equal(formatTemp(85.6, 'metric'), '86°')
-  assert.equal(formatTemp(0, 'metric'), '0°')
-  assert.equal(formatTemp(30, 'imperial'), '86°')
-  assert.equal(formatTemp(30.6, 'imperial'), '87°')
+  assert.equal(formatTemp(30.4, 'metric'), '30°C')
+  assert.equal(formatTemp(85.6, 'metric'), '86°C')
+  assert.equal(formatTemp(0, 'metric'), '0°C')
+  assert.equal(formatTemp(30, 'imperial'), '86°F')
+  assert.equal(formatTemp(30.6, 'imperial'), '87°F')
 })
 
 test('formatSpeed rounds and appends unit label', () => {

@@ -1,7 +1,7 @@
 import { formatTemp, formatPrecip } from './units.js'
 
 export function formatTempRange(minC, maxC, system = 'metric') {
-  return `${formatTemp(minC, system)} ${formatTemp(maxC, system)}`
+  return `${formatTemp(minC, system)} – ${formatTemp(maxC, system)}`
 }
 
 export function formatPrecipProb(mm, pop, system = 'metric') {

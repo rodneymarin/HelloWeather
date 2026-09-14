@@ -1,6 +1,6 @@
 import { formatTemp, formatSpeed } from '../lib/units.js'
 import { formatTempRange } from '../lib/format.js'
-import { dayLabel, clockLabel, updatedLabel } from '../lib/datetime.js'
+import { dayLabel, clockLabel } from '../lib/datetime.js'
 import { moonPhase, moonPhaseLabel } from '../lib/astro.js'
 import { uvClass } from '../lib/uv.js'
 import { iconSvg, moonPhaseSvg } from './icons.js'
@@ -15,6 +15,10 @@ export function renderHero(model, units) {
     : ''
 
   return `
+    <div class="hero-sun-times">
+      <span>${iconSvg('sunrise')} ${clockLabel(model.sun.sunriseSec, tz)}</span>
+      <span>${iconSvg('sunset')} ${clockLabel(model.sun.sunsetSec, tz)}</span>
+    </div>
     <div class="hero-top">
       <span class="hero-temp">${formatTemp(cur.tempC, units)}</span>
       <div class="hero-day">
@@ -33,11 +37,6 @@ export function renderHero(model, units) {
         ${iconSvg(cur.icon)}
         <p>${cur.description || cur.condition}</p>
       </div>
-    </div>
-    <div class="hero-bottom">
-      <span>${iconSvg('sunrise')} ${clockLabel(model.sun.sunriseSec, tz)}</span>
-      <span>${iconSvg('sunset')} ${clockLabel(model.sun.sunsetSec, tz)}</span>
-      <span class="updated">Updated: ${updatedLabel(model.updatedAt / 1000)}</span>
     </div>`
 }
 
