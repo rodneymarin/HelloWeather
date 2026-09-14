@@ -7,9 +7,9 @@ test('getConfig uses provided PORT', () => {
   assert.equal(config.port, 8080)
 })
 
-test('getConfig defaults port to 3000 when missing or invalid', () => {
-  assert.equal(getConfig({}).port, 3000)
-  assert.equal(getConfig({ PORT: 'not-a-number', OPENWEATHER_API_KEY: 'k' }).port, 3000)
+test('getConfig defaults port to 2829 when missing or invalid', () => {
+  assert.equal(getConfig({}).port, 2829)
+  assert.equal(getConfig({ PORT: 'not-a-number', OPENWEATHER_API_KEY: 'k' }).port, 2829)
 })
 
 test('getConfig falls back to CONCEPT.md API key when env missing', () => {

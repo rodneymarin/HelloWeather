@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 
 const DEFAULT_API_KEY = ''
-const DEFAULT_PORT = 3000
+const DEFAULT_PORT = 2829
 const DEFAULT_LOCATION = 'Maracaibo'
 
 function loadDotEnv(filePath = '.env') {
