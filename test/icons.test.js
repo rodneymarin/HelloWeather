@@ -1,0 +1,68 @@
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+import { moonPhaseSvg } from '../public/js/ui/icons.js'
+import { renderDaily } from '../public/js/ui/daily.js'
+
+function litPath(phase) {
+  const svg = moonPhaseSvg(phase)
+  assert.ok(svg.includes('class="wicon moon"'), 'wicon moon wrapper')
+  assert.ok(svg.includes('<circle class="moon-dark" cx="12" cy="12" r="10"/>'), 'moon-dark disc')
+  assert.ok(svg.includes('<path class="moon-lit"'), 'moon-lit path')
+  const m = svg.match(/d="([^"]+)"/)
+  return m[1]
+}
+
+test('full moon renders a fully lit disc', () => {
+  assert.equal(litPath(0.5), 'M12 2 A10 10 0 0 1 12 22 A10.00 10 0 0 1 12 2 Z')
+})
+
+test('new moon renders a degenerate (dark) disc', () => {
+  assert.equal(litPath(0), 'M12 2 A10 10 0 0 1 12 22 A10.00 10 0 0 0 12 2 Z')
+})
+
+test('waxing crescent keeps the lit sliver on the right', () => {
+  assert.equal(litPath(0.1), 'M12 2 A10 10 0 0 1 12 22 A8.09 10 0 0 0 12 2 Z')
+})
+
+test('waning crescent keeps the lit sliver on the left', () => {
+  assert.equal(litPath(0.9), 'M12 2 A10 10 0 0 0 12 22 A8.09 10 0 0 1 12 2 Z')
+})
+
+test('gibbous phases bulge the terminator toward the dark side', () => {
+  assert.equal(litPath(0.4), 'M12 2 A10 10 0 0 1 12 22 A8.09 10 0 0 1 12 2 Z')
+  assert.equal(litPath(0.6), 'M12 2 A10 10 0 0 0 12 22 A8.09 10 0 0 0 12 2 Z')
+})
+
+test('quarter phases use a straight (rx 0) terminator', () => {
+  assert.ok(litPath(0.25).includes('A0.00 10 0 0 '))
+  assert.ok(litPath(0.75).includes('A0.00 10 0 0 '))
+})
+
+test('missing or out-of-range phase falls back to a new moon', () => {
+  assert.ok(litPath(undefined).includes('A10.00 10 0 0 0 12 2'))
+  assert.ok(litPath(-1).includes('A10.00 10 0 0 0 12 2'))
+  assert.ok(litPath(2).includes('A10.00 10 0 0 0 12 2'))
+})
+
+test('renderDaily uses the phase-shaped moon icon', () => {
+  const model = {
+    timezone: 'UTC',
+    daily: [{
+      dt: 0,
+      minC: 5,
+      maxC: 20,
+      condition: 'Clear',
+      icon: '01d',
+      windDeg: 90,
+      windKmh: 10,
+      precipMm: 0,
+      pop: 0,
+      gustKmh: null,
+      uvIndex: null,
+      moonPhase: 0.25,
+    }],
+  }
+  const html = renderDaily(model, 'metric')
+  assert.ok(html.includes('class="wicon moon"'), 'extended row uses shaped moon')
+  assert.ok(html.includes('First Quarter'), 'phase label kept')
+})

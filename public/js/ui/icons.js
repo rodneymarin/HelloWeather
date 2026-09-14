@@ -42,6 +42,19 @@ export function arrowSvg(deg) {
   return `<svg class="wicon arrow" viewBox="0 0 24 24" style="transform: rotate(${deg ?? 0}deg)" aria-hidden="true">${ICON_SVG.arrow}</svg>`
 }
 
+export function moonPhaseSvg(phase) {
+  const p = (Number.isFinite(phase) ? Math.max(0, Math.min(phase, 1)) : 0) % 1
+  const a = 2 * Math.PI * p
+  const R = 10
+  const waxing = Math.sin(a) >= 0
+  const e = Math.cos(a)
+  const rx = (Math.abs(e) * R).toFixed(2)
+  const limb = waxing ? 1 : 0
+  const tSweep = waxing ? (e > 0 ? 0 : 1) : (e > 0 ? 1 : 0)
+  const d = `M12 ${12 - R} A${R} ${R} 0 0 ${limb} 12 ${12 + R} A${rx} ${R} 0 0 ${tSweep} 12 ${12 - R} Z`
+  return `<svg class="wicon moon" viewBox="0 0 24 24" aria-hidden="true"><circle class="moon-dark" cx="12" cy="12" r="10"/><path class="moon-lit" d="${d}"/></svg>`
+}
+
 export function escapeHtml(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')

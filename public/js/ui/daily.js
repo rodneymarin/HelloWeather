@@ -3,7 +3,7 @@ import { formatTempRange, formatPrecipProb } from '../lib/format.js'
 import { shortDateLabel } from '../lib/datetime.js'
 import { moonPhaseLabel } from '../lib/astro.js'
 import { uvClass } from '../lib/uv.js'
-import { iconSvg, arrowSvg } from './icons.js'
+import { iconSvg, arrowSvg, moonPhaseSvg } from './icons.js'
 
 export function renderDaily(model, units) {
   const tz = model.timezone
@@ -25,7 +25,7 @@ export function renderDaily(model, units) {
           <span class="metric rain">${iconSvg('drop')} ${formatPrecipProb(d.precipMm, d.pop, units)}</span>
           ${uv}
           ${gust}
-          <span class="metric">${iconSvg('moon')} ${moonPhaseLabel(d.moonPhase)}</span>
+          <span class="metric">${moonPhaseSvg(d.moonPhase)} ${moonPhaseLabel(d.moonPhase)}</span>
         </div>
         <div class="daily-summary">
           ${iconSvg(d.icon)}
