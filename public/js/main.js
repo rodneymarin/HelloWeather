@@ -214,7 +214,10 @@ document.addEventListener('click', (e) => {
 render()
 updateFavoriteButton()
 els.overlay.addEventListener('click', (e) => {
-  if (e.target === els.overlay) closeOverlay()
+  if (e.target === els.overlay) {
+    closeDrawer()
+    closeOverlay()
+  }
 })
 loadWeather({ q: state.q })
 setInterval(refreshWeather, REFRESH_MS)
