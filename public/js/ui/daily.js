@@ -21,7 +21,7 @@ export function renderDaily(model, units) {
       <div class="daily-row">
         <div class="daily-date">${shortDateLabel(d.dt, tz)}</div>
         <div class="daily-metrics">
-          <span class="metric">${arrowSvg(d.windDeg)} ${formatSpeed(d.windKmh, units)}</span>
+          <span class="metric wind">${arrowSvg(d.windDeg)} ${formatSpeed(d.windKmh, units)}</span>
           <span class="metric rain">${iconSvg('drop')} ${formatPrecipProb(d.precipMm, d.pop, units)}</span>
           ${uv}
           ${gust}
