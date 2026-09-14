@@ -5,6 +5,6 @@ export function offlineBanner(model) {
 }
 
 export function connectionBannerHtml(offline) {
-  if (!offline) return ''
-  return `<div class="conn-banner" role="status">No connection — retrying…</div>`
+  if (!offline) return '<div class="conn-banner hidden" role="status"></div>'
+  return '<div class="conn-banner" role="status">No connection — retrying…</div>'
 }
