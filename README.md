@@ -3,6 +3,8 @@
 A local weather dashboard with a vanilla JS frontend served by Express,
 backed by OpenWeather data normalized into a small metric model.
 
+Repository: <https://github.com/rodneymarin/HelloWeather>
+
 ## Features
 
 - Current conditions, feels-like, humidity, wind, UV and more in the hero
@@ -46,7 +48,7 @@ sudo apt-get install -y nodejs
 Then clone and set up the app:
 
 ```bash
-git clone <repo-url> helloweather
+git clone https://github.com/rodneymarin/HelloWeather helloweather
 cd helloweather
 npm install
 cp .env.example .env    # then add your OPENWEATHER_API_KEY
