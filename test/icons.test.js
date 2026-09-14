@@ -2,6 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { moonPhaseSvg } from '../public/js/ui/icons.js'
 import { renderDaily } from '../public/js/ui/daily.js'
+import { renderHero } from '../public/js/ui/hero.js'
 
 function litPath(phase) {
   const svg = moonPhaseSvg(phase)
@@ -65,4 +66,17 @@ test('renderDaily uses the phase-shaped moon icon', () => {
   const html = renderDaily(model, 'metric')
   assert.ok(html.includes('class="wicon moon"'), 'extended row uses shaped moon')
   assert.ok(html.includes('First Quarter'), 'phase label kept')
+})
+
+test('renderHero uses the phase-shaped moon icon', () => {
+  const model = {
+    timezone: 'UTC',
+    current: { tempC: 30, windKmh: 10, windDeg: 90, humidity: 60, uvIndex: null, icon: '01d', description: 'Clear' },
+    today: { minC: 25, maxC: 32 },
+    sun: { sunriseSec: 1757900000, sunsetSec: 1757940000 },
+    updatedAt: 1757900000,
+  }
+  const html = renderHero(model, 'metric')
+  assert.ok(html.includes('class="wicon moon"'), 'hero uses shaped moon icon')
+  assert.match(html, /<path class="moon-lit"/, 'hero icon has lit path')
 })

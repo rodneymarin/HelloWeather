@@ -3,7 +3,7 @@ import { formatTempRange } from '../lib/format.js'
 import { dayLabel, clockLabel, updatedLabel } from '../lib/datetime.js'
 import { moonPhase, moonPhaseLabel } from '../lib/astro.js'
 import { uvClass } from '../lib/uv.js'
-import { iconSvg } from './icons.js'
+import { iconSvg, moonPhaseSvg } from './icons.js'
 
 export function renderHero(model, units) {
   const cur = model.current
@@ -27,7 +27,7 @@ export function renderHero(model, units) {
         <span class="metric">${iconSvg('arrow')} ${formatSpeed(cur.windKmh, units)}</span>
         <span class="metric">${iconSvg('cloud')} ${cur.humidity}%</span>
         ${uv}
-        <span class="metric">${iconSvg('moon')} ${moonPhaseLabel(moonPhase(Math.floor(Date.now() / 1000)))}</span>
+        <span class="metric">${moonPhaseSvg(moonPhase(Math.floor(Date.now() / 1000)))} ${moonPhaseLabel(moonPhase(Math.floor(Date.now() / 1000)))}</span>
       </div>
       <div class="hero-condition">
         ${iconSvg(cur.icon)}
