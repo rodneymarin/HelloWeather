@@ -1,4 +1,5 @@
 import { loadState, saveState, resolveTheme } from './state.js'
+import { preferCityLabel } from './lib/location.js'
 import { fetchWeather, fetchGeocode, fetchReverseGeocode, fetchIpLocation } from './api.js'
 import { renderHero, renderNoData } from './ui/hero.js'
 import { renderHourly } from './ui/hourly.js'
@@ -65,10 +66,17 @@ async function refreshWeather() {
   if (refreshing) return
   refreshing = true
   const q = state.q
+  const hasCoords = typeof state.coords?.lat === 'number' && typeof state.coords?.lon === 'number'
+  const payload = hasCoords
+    ? { lat: state.coords.lat, lon: state.coords.lon, name: state.q }
+    : { q }
   try {
-    const data = await fetchWeather({ q })
+    const data = await fetchWeather(payload)
     if (state.q !== q) return
     state.data = data
+    if (typeof data.location?.lat === 'number' && typeof data.location?.lon === 'number') {
+      state.coords = { lat: data.location.lat, lon: data.location.lon }
+    }
     if (data.location?.name) state.q = data.location.name
     if (state.status === 'error') state.status = 'done'
     saveState(state)
@@ -94,6 +102,9 @@ async function loadWeather(payload) {
   try {
     const data = await fetchWeather(payload)
     state.data = data
+    if (typeof data.location?.lat === 'number' && typeof data.location?.lon === 'number') {
+      state.coords = { lat: data.location.lat, lon: data.location.lon }
+    }
     if (data.location?.name) state.q = data.location.name
     if (state.status === 'error') state.status = 'done'
     showConnectionBanner(false)
@@ -156,48 +167,52 @@ function messageTo(list, text) {
   list.innerHTML = `<li class="muted">${text}</li>`
 }
 
-function placeLabel(place) {
-  return [place.name, place.state, place.country].filter(Boolean).join(', ') || place.name
-}
-
-function loadPlaceWeather(place, coords) {
-  const payload = coords
-    ? { lat: coords.lat, lon: coords.lon, name: placeLabel(place) }
-    : { lat: place.lat, lon: place.lon, name: placeLabel(place) }
-  loadWeather(payload)
-  closeOverlay()
-}
-
 async function useMyLocation() {
   const list = document.getElementById('search-results')
   if (!list) return
 
+  let ipPlace = null
+  try {
+    ipPlace = await fetchIpLocation()
+  } catch {
+    ipPlace = null
+  }
+
+  let coords = null
   if ('geolocation' in navigator) {
     messageTo(list, 'Detecting your location…')
     try {
       const pos = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject))
-      const { latitude, longitude } = pos.coords
-      const place = (await fetchReverseGeocode({ lat: latitude, lon: longitude }))[0]
-      if (place) return loadPlaceWeather(place, { lat: latitude, lon: longitude })
+      coords = { lat: pos.coords.latitude, lon: pos.coords.longitude }
     } catch {
       /* geolocation blocked or failed → fall back to IP location */
     }
   }
-
-  messageTo(list, 'Locating you by IP…')
-  try {
-    const place = await fetchIpLocation()
-    if (!place) throw new Error('no place')
-    loadPlaceWeather(place)
-  } catch {
-    messageTo(list, 'Could not determine your location.')
+  if (!coords && ipPlace && typeof ipPlace.lat === 'number' && typeof ipPlace.lon === 'number') {
+    coords = { lat: ipPlace.lat, lon: ipPlace.lon }
   }
+  if (!coords) {
+    messageTo(list, 'Could not determine your location.')
+    return
+  }
+
+  let sectorPlace = null
+  if (!ipPlace) {
+    try {
+      sectorPlace = (await fetchReverseGeocode(coords))[0] ?? null
+    } catch {
+      sectorPlace = null
+    }
+  }
+  const name = preferCityLabel(ipPlace, sectorPlace) || state.q
+  loadWeather({ lat: coords.lat, lon: coords.lon, name })
+  closeOverlay()
 }
 
 document.addEventListener('click', (e) => {
   const actionEl = e.target.closest('[data-action]')
   if (!actionEl) return
-  const { action, value, name } = actionEl.dataset
+  const { action, value, name, lat, lon } = actionEl.dataset
 
   switch (action) {
     case 'menu':
@@ -236,7 +251,7 @@ document.addEventListener('click', (e) => {
       useMyLocation()
       break
     case 'pick-location':
-      loadWeather({ q: name })
+      loadWeather(lat != null ? { lat: Number(lat), lon: Number(lon), name } : { q: name })
       closeOverlay()
       break
     case 'goto-fav': {
@@ -264,5 +279,6 @@ els.overlay.addEventListener('click', (e) => {
     closeOverlay()
   }
 })
-loadWeather({ q: state.q })
+const hasCoords = typeof state.coords?.lat === 'number' && typeof state.coords?.lon === 'number'
+loadWeather(hasCoords ? { lat: state.coords.lat, lon: state.coords.lon, name: state.q } : { q: state.q })
 setInterval(refreshWeather, REFRESH_MS)

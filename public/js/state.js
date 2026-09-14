@@ -1,6 +1,6 @@
-const KEYS = { theme: 'helloweather:theme', location: 'helloweather:location', cache: 'helloweather:cache', favorites: 'helloweather:favorites' }
+const KEYS = { theme: 'helloweather:theme', location: 'helloweather:location', coords: 'helloweather:coords', cache: 'helloweather:cache', favorites: 'helloweather:favorites' }
 
-export const DEFAULT_STATE = { theme: 'system', q: 'Maracaibo', favorites: [], data: null, status: 'idle' }
+export const DEFAULT_STATE = { theme: 'system', q: 'Maracaibo', favorites: [], data: null, status: 'idle', coords: null }
 
 export const THEMES = ['light', 'dark', 'system']
 
@@ -16,6 +16,11 @@ export function loadState() {
     if (THEMES.includes(theme)) s.theme = theme
     const q = localStorage.getItem(KEYS.location)
     if (q) s.q = q
+    const coords = localStorage.getItem(KEYS.coords)
+    if (coords) {
+      const c = JSON.parse(coords)
+      if (typeof c?.lat === 'number' && typeof c?.lon === 'number') s.coords = { lat: c.lat, lon: c.lon }
+    }
     const cache = localStorage.getItem(KEYS.cache)
     if (cache) {
       const c = JSON.parse(cache)
@@ -32,6 +37,7 @@ export function saveState(s) {
   try {
     localStorage.setItem(KEYS.theme, s.theme)
     localStorage.setItem(KEYS.location, s.q)
+    if (s.coords) localStorage.setItem(KEYS.coords, JSON.stringify(s.coords))
     if (s.data) localStorage.setItem(KEYS.cache, JSON.stringify({ data: s.data }))
     localStorage.setItem(KEYS.favorites, JSON.stringify(s.favorites))
   } catch {

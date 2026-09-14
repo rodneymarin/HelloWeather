@@ -20,7 +20,8 @@ export function renderSearchResults(results) {
   return results
     .map((r) => {
       const label = [r.name, r.state, r.country].filter(Boolean).join(', ') || r.name
-      return `<li><button class="search-result" data-action="pick-location" data-name="${escapeHtml(label)}">${escapeHtml(label)}</button></li>`
+      const coords = r.lat != null && r.lon != null ? ` data-lat="${escapeHtml(String(r.lat))}" data-lon="${escapeHtml(String(r.lon))}"` : ''
+      return `<li><button class="search-result" data-action="pick-location" data-name="${escapeHtml(label)}"${coords}>${escapeHtml(label)}</button></li>`
     })
     .join('')
 }

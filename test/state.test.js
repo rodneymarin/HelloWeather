@@ -20,3 +20,7 @@ test('resolveTheme treats "system" or invalid values as system preference', () =
 test('DEFAULT_STATE uses system theme', () => {
   assert.equal(DEFAULT_STATE.theme, 'system')
 })
+
+test('DEFAULT_STATE starts without resolved coordinates', () => {
+  assert.equal(DEFAULT_STATE.coords, null)
+})
