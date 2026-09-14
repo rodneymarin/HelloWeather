@@ -16,7 +16,7 @@ function normalizeOneCall(data, placeName) {
   const current = data.current
   const cw = weatherInfo(current.weather)
   const hourly = (data.hourly || []).slice(0, 48)
-  const daily = (data.daily || []).slice(0, 8)
+  const daily = (data.daily || []).slice(0, 5)
   const today = first(daily)
 
   return {
@@ -87,7 +87,7 @@ function normalizeBasic(data, placeName) {
   const { current, forecast } = data
   const tz = forecast.city.timezone
   const cw = weatherInfo(current.weather)
-  const days = groupByLocalDay(forecast.list, tz).slice(0, 8)
+  const days = groupByLocalDay(forecast.list, tz).slice(0, 5)
 
   return {
     source: 'current-forecast',

@@ -59,3 +59,30 @@ test('normalizes Current + Forecast fallback payload', () => {
   assert.equal(model.daily[0].pop, 0.48)
   assert.equal(model.daily[0].uvIndex, null)
 })
+
+test('caps One Call daily forecast at 5 days', () => {
+  const day = onecallFixture.daily[0]
+  const days = Array.from({ length: 7 }, (_, i) => ({
+    ...day,
+    dt: day.dt + i * 86400,
+    temp: { min: 25 + (i % 3), max: 33 + (i % 3) },
+    uvi: i,
+    rain: i,
+  }))
+  const model = normalizeWeather({ source: 'onecall', data: { ...onecallFixture, daily: days } }, 'Maracaibo')
+  assert.equal(model.daily.length, 5)
+  assert.equal(model.hourly.length, 3)
+})
+
+test('caps Current + Forecast daily forecast at 5 days', () => {
+  const list = Array.from({ length: 6 }, (_, i) => ({
+    dt: basicForecastFixture.list[0].dt + i * 86400,
+    main: { temp: 28 + i, temp_min: 26, temp_max: 31 },
+    wind: { speed: 4, deg: 90 },
+    pop: 0.1,
+    weather: [{ main: 'Clouds', icon: '04d' }],
+  }))
+  const data = { current: basicCurrentFixture, forecast: { city: { name: 'Maracaibo', timezone: -14400 }, list } }
+  const model = normalizeWeather({ source: 'current-forecast', data }, 'Maracaibo')
+  assert.equal(model.daily.length, 5)
+})
