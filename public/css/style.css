@@ -9,6 +9,7 @@
   --accent-text: #ffffff;
   --warm: #d9480f;
   --orange: #f76707;
+  --sun: #f59f00;
   --good: #2f9e44;
   --bad: #e0224b;
   --rain: #1971c2;
@@ -34,6 +35,7 @@
   --accent-text: #0b1626;
   --warm: #e8590c;
   --orange: #ff922b;
+  --sun: #ffb300;
   --good: #51cf66;
   --bad: #ff6b6b;
   --rain: #4dabf7;
@@ -118,6 +120,7 @@ section { margin: 8px 12px; }
   font-size: 0.85rem; color: var(--muted);
 }
 .hero-bottom span { display: inline-flex; align-items: center; gap: 6px; }
+.hero-bottom .wicon { color: var(--sun); }
 .updated { margin-left: auto; }
 
 .hourly-track {

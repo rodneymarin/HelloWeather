@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { moonPhaseSvg } from '../public/js/ui/icons.js'
+import { iconSvg, moonPhaseSvg } from '../public/js/ui/icons.js'
 import { renderDaily } from '../public/js/ui/daily.js'
 import { renderHero } from '../public/js/ui/hero.js'
 
@@ -79,4 +79,14 @@ test('renderHero uses the phase-shaped moon icon', () => {
   const html = renderHero(model, 'metric')
   assert.ok(html.includes('class="wicon moon"'), 'hero uses shaped moon icon')
   assert.match(html, /<path class="moon-lit"/, 'hero icon has lit path')
+})
+
+test('sunrise and sunset icons show a half sun on the horizon with a direction arrow', () => {
+  const rise = iconSvg('sunrise')
+  const set = iconSvg('sunset')
+  assert.ok(rise.includes('<path d="M7 16a5 5 0 0 1 10 0z'), 'rise half sun above horizon')
+  assert.ok(set.includes('<path d="M7 16a5 5 0 0 1 10 0z'), 'set half sun above horizon')
+  assert.ok(rise.includes('M3 16h18'), 'horizon line')
+  assert.ok(rise.includes('M12 4'), 'rise points up')
+  assert.ok(set.includes('M12 22'), 'set points down')
 })
