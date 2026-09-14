@@ -68,5 +68,5 @@ export function renderHourly(model, units = 'metric') {
 
   return `
     <div class="section-title">Hourly</div>
-    <div class="hourly-track">${cols}<div class="temp-area">${buildTempArea(items, units)}</div></div>`
+    <div class="hourly-track"><div class="hourly-track-inner">${cols}<div class="temp-area">${buildTempArea(items, units)}</div></div></div>`
 }

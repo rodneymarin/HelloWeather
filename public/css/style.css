@@ -19,7 +19,7 @@
   --offline-text: #7a5b00;
   --scrim: rgba(15, 27, 45, 0.4);
   --radius: 14px;
-  --temp-area-h: 54px;
+  --temp-area-h: 64px;
 }
 
 :root[data-theme="dark"] {
@@ -117,12 +117,17 @@ section { margin: 8px 12px; }
 .updated { margin-left: auto; }
 
 .hourly-track {
-  position: relative; display: flex; gap: 0; overflow-x: auto;
-  padding: 12px 4px var(--temp-area-h); background: var(--panel); border-radius: var(--radius);
+  position: relative; overflow-x: auto;
+  background: var(--panel); border-radius: var(--radius);
+  scrollbar-width: none;
+}
+.hourly-track::-webkit-scrollbar { display: none; }
+.hourly-track-inner {
+  position: relative; display: flex; width: max-content;
 }
 .hourly-col {
-  min-width: 76px; display: flex; flex-direction: column; align-items: center; gap: 6px;
-  font-size: 0.82rem; padding: 0 6px;
+  width: 80px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-size: 0.82rem; padding: 14px 6px calc(var(--temp-area-h) + 14px);
   border-right: 1px solid var(--bg);
 }
 .hourly-col:last-child { border-right: none; }
@@ -141,11 +146,11 @@ section { margin: 8px 12px; }
   pointer-events: none; z-index: 2;
 }
 .temp-chart path {
-  fill: none; stroke: var(--warm); stroke-width: 2;
+  fill: none; stroke: var(--warm); stroke-width: 3;
   vector-effect: non-scaling-stroke; stroke-linecap: round;
 }
 .chart-temp {
-  position: absolute; z-index: 3; transform: translate(-50%, -50%);
+  position: absolute; z-index: 3; transform: translate(-50%, calc(-100% - 4px));
   font-size: 0.78rem; font-weight: 700; color: var(--text); white-space: nowrap;
   text-shadow: 0 0 3px var(--panel), 0 1px 2px rgba(0, 0, 0, 0.25);
 }
