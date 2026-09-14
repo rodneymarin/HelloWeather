@@ -8,7 +8,6 @@
   --accent: #0b7fbd;
   --accent-text: #ffffff;
   --warm: #d9480f;
-  --wind: #a8641f;
   --good: #2f9e44;
   --bad: #e0224b;
   --rain: #1971c2;
@@ -33,7 +32,6 @@
   --accent: #4fc3f7;
   --accent-text: #0b1626;
   --warm: #e8590c;
-  --wind: #e8a05a;
   --good: #51cf66;
   --bad: #ff6b6b;
   --rain: #4dabf7;
@@ -142,8 +140,8 @@ section { margin: 8px 12px; }
 }
 .hourly-col .hour small { display: block; line-height: 1.2; color: var(--accent); font-size: 0.85em; }
 .hourly-col .wicon { color: var(--accent); }
-.hourly-col .wind { display: inline-flex; align-items: center; gap: 3px; color: var(--wind); }
-.hourly-col .gust { color: var(--warm); font-weight: 600; }
+.hourly-col .wind { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); }
+.hourly-col .gust { color: var(--warm); }
 
 .temp-area { position: absolute; left: 0; right: 0; bottom: 0; height: var(--temp-area-h); }
 .temp-chart {
