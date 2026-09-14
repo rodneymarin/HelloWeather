@@ -15,7 +15,8 @@ function pointAt(items, i) {
   const temps = items.map((h) => h.tempC)
   const min = Math.min(...temps)
   const max = Math.max(...temps)
-  const spread = Math.max(max - min, 0.1)
+  const spread = max - min
+  if (spread <= 0) return { x, y: 22 }
   const y = 12 + (1 - (items[i].tempC - min) / spread) * 20
   return { x, y }
 }
@@ -38,6 +39,14 @@ function smoothPath(points) {
   return d
 }
 
+export function scrollIndicator(client, total, scrollLeft) {
+  if (total <= client || client <= 0) return { widthPct: 0, leftPct: 0 }
+  const widthPct = Math.max(12, (client / total) * 100)
+  const maxLeftPct = 100 - widthPct
+  const progress = Math.min(1, Math.max(0, scrollLeft / (total - client)))
+  return { widthPct, leftPct: progress * maxLeftPct }
+}
+
 export function buildTempArea(items, units = 'metric') {
   if (!items.length) return ''
   const points = items.map((_, i) => pointAt(items, i))
@@ -46,7 +55,7 @@ export function buildTempArea(items, units = 'metric') {
     ? `<svg class="temp-chart" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="${path}" /></svg>`
     : ''
   const temps = points
-    .map((pt, i) => `<span class="chart-temp" style="left:${pt.x.toFixed(2)}%;top:${pt.y.toFixed(2)}%">${formatTemp(items[i].tempC, units)}</span>`)
+    .map((pt, i) => `<span class="chart-temp" style="left:${pt.x.toFixed(2)}%;top:${(pt.y / 0.4).toFixed(2)}%">${formatTemp(items[i].tempC, units)}</span>`)
     .join('')
   return `${svg}${temps}`
 }
@@ -68,5 +77,5 @@ export function renderHourly(model, units = 'metric') {
 
   return `
     <div class="section-title">Hourly</div>
-    <div class="hourly-track"><div class="hourly-track-inner">${cols}<div class="temp-area">${buildTempArea(items, units)}</div></div></div>`
+    <div class="hourly-track"><div class="hourly-track-inner">${cols}<div class="temp-area">${buildTempArea(items, units)}</div></div><div class="hourly-scrollbar"><div class="hourly-scroll-thumb"></div></div></div>`
 }
