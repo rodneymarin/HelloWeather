@@ -19,6 +19,9 @@ function fakeClient(overrides = {}) {
       if (q === 'Nowhere') return []
       return [{ name: 'Maracaibo', lat: 10.66, lon: -71.61 }]
     },
+    async reverseGeocode(lat, lon) {
+      return [{ name: 'Maracaibo', lat, lon }]
+    },
     async getWeather() {
       if (state.failures > 0) {
         state.failures -= 1
@@ -114,4 +117,11 @@ test('/api/geocode returns trimmed place list', async () => {
 test('/api/geocode returns 400 without q', async () => {
   const res = await fetch(`${ctx.baseUrl}/api/geocode`)
   assert.equal(res.status, 400)
+})
+
+test('/api/geocode reverse-resolves by coordinates', async () => {
+  const res = await fetch(`${ctx.baseUrl}/api/geocode?lat=10.66&lon=-71.61`)
+  assert.equal(res.status, 200)
+  const body = await res.json()
+  assert.deepEqual(body, [{ name: 'Maracaibo', lat: 10.66, lon: -71.61 }])
 })

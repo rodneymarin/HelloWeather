@@ -67,3 +67,21 @@ test('geocode hits geo endpoint', async () => {
   assert.equal(url.searchParams.get('q'), 'Maracaibo')
   assert.equal(url.searchParams.get('limit'), '5')
 })
+
+test('reverseGeocode hits the reverse geo endpoint with coords', async () => {
+  const calls = []
+  const client = createOpenWeatherClient({
+    apiKey: 'secret',
+    fetchImpl: async (url) => {
+      calls.push(url.toString())
+      return jsonResponse([{ name: 'Maracaibo', lat: 10.66, lon: -71.61 }])
+    },
+  })
+  const results = await client.reverseGeocode(10.66, -71.61)
+  assert.equal(results[0].name, 'Maracaibo')
+  const url = new URL(calls[0])
+  assert.equal(url.pathname, '/geo/1.0/reverse')
+  assert.equal(url.searchParams.get('lat'), '10.66')
+  assert.equal(url.searchParams.get('lon'), '-71.61')
+  assert.equal(url.searchParams.get('limit'), '1')
+})

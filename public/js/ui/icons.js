@@ -8,6 +8,7 @@ const ICON_SVG = {
   fog: '<path d="M7 16h9a4 4 0 0 0 0-8 5 5 0 0 0-9.6-1A4.5 4.5 0 0 0 7 16z" fill="currentColor" opacity=".5"/><path d="M4 19h16M4 21h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
   partcloud: '<circle cx="8" cy="9" r="4" fill="currentColor"/><path d="M8 3v2M8 13v2M2 8h2M12 4.5l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 18h7a3 3 0 0 0 0-6 4 4 0 0 0-7 .8A3.5 3.5 0 0 0 12 18z" fill="currentColor"/>',
   arrow: '<path d="M12 3l-5 5h3v9h4V8h3z" fill="currentColor"/>',
+  pin: '<path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11z" fill="currentColor"/><circle cx="12" cy="10" r="2.5" fill="var(--panel)"/>',
   uv: '<circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   sunrise: '<path d="M7 16a5 5 0 0 1 10 0z" fill="currentColor"/><path d="M3 16h18M12 4l-2.5 2.5M12 4l2.5 2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
   sunset: '<path d="M7 16a5 5 0 0 1 10 0z" fill="currentColor"/><path d="M3 16h18M12 22l-2.5-2.5M12 22l2.5-2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',

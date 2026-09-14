@@ -39,5 +39,8 @@ export function createOpenWeatherClient({ apiKey, fetchImpl = globalThis.fetch, 
     async geocode(query) {
       return this.request('/geo/1.0/direct', { q: query, limit: 5 })
     },
+    async reverseGeocode(lat, lon) {
+      return this.request('/geo/1.0/reverse', { lat, lon, limit: 1 })
+    },
   }
 }

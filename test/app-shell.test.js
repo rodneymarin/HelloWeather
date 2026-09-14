@@ -20,7 +20,7 @@ test('serves index.html at /', async () => {
   const html = await res.text()
   assert.match(html, /<title>HelloWeather<\/title>/)
   assert.match(html, /id="hero"/)
-  assert.match(html, /Powered by OpenWeather/)
+  assert.ok(!html.includes('Powered by OpenWeather'))
 })
 
 test('serves css and js assets', async () => {

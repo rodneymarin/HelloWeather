@@ -1,5 +1,9 @@
 import { iconSvg, escapeHtml } from './icons.js'
 
+export function emptySearchResultsHtml() {
+  return `<li><button class="search-result use-location" data-action="use-location">${iconSvg('pin')} Use my current location</button></li>`
+}
+
 export function searchOverlayHtml() {
   return `
     <div class="search-box">
@@ -7,7 +11,7 @@ export function searchOverlayHtml() {
         <input id="search-input" type="text" placeholder="City name or coordinates" autocomplete="off" />
         <button class="icon-btn" data-action="close-search">${iconSvg('close')}</button>
       </div>
-      <ul id="search-results"></ul>
+      <ul id="search-results">${emptySearchResultsHtml()}</ul>
     </div>`
 }
 

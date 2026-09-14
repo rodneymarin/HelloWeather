@@ -21,3 +21,7 @@ export function fetchWeather(payload) {
 export function fetchGeocode(q) {
   return requestJson(`/api/geocode?q=${encodeURIComponent(q)}`)
 }
+
+export function fetchReverseGeocode({ lat, lon }) {
+  return requestJson(`/api/geocode?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`)
+}

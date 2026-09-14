@@ -19,16 +19,26 @@ export function createApp({ client = createOpenWeatherClient({}), config = getCo
   })
 
   app.get('/api/geocode', async (req, res) => {
-    const q = req.query.q
-    if (typeof q !== 'string' || !q.trim()) {
-      return res.status(400).json({ error: 'Missing "q" query parameter' })
+    const { q, lat, lon } = req.query
+    if (typeof q === 'string' && q.trim()) {
+      try {
+        const results = await client.geocode(q.trim())
+        res.json(results.map((p) => ({ name: p.name, country: p.country, state: p.state, lat: p.lat, lon: p.lon })))
+      } catch {
+        res.status(502).json({ error: 'Geocoding provider unavailable' })
+      }
+      return
     }
-    try {
-      const results = await client.geocode(q.trim())
-      res.json(results.map((p) => ({ name: p.name, country: p.country, state: p.state, lat: p.lat, lon: p.lon })))
-    } catch {
-      res.status(502).json({ error: 'Geocoding provider unavailable' })
+    if (lat != null && lon != null && !Array.isArray(lat) && !Array.isArray(lon)) {
+      try {
+        const results = await client.reverseGeocode(parseFloat(lat), parseFloat(lon))
+        res.json(results.map((p) => ({ name: p.name, country: p.country, state: p.state, lat: p.lat, lon: p.lon })))
+      } catch {
+        res.status(502).json({ error: 'Geocoding provider unavailable' })
+      }
+      return
     }
+    res.status(400).json({ error: 'Provide "q" or "lat"+"lon"' })
   })
 
   app.get('/api/weather', async (req, res) => {

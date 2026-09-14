@@ -1,5 +1,5 @@
 import { loadState, saveState, resolveTheme } from './state.js'
-import { fetchWeather, fetchGeocode } from './api.js'
+import { fetchWeather, fetchGeocode, fetchReverseGeocode } from './api.js'
 import { renderHero, renderNoData } from './ui/hero.js'
 import { renderHourly } from './ui/hourly.js'
 import { renderDaily } from './ui/daily.js'
@@ -7,7 +7,7 @@ import { renderHeader } from './ui/header.js'
 import { skeleton } from './ui/skeleton.js'
 import { offlineBanner, connectionBannerHtml } from './ui/banner.js'
 import { showToast } from './ui/toast.js'
-import { searchOverlayHtml, renderSearchResults } from './ui/search.js'
+import { searchOverlayHtml, renderSearchResults, emptySearchResultsHtml } from './ui/search.js'
 import { drawerHtml } from './ui/drawer.js'
 
 const state = loadState()
@@ -129,7 +129,7 @@ function openSearch() {
     const q = input.value.trim()
     const list = document.getElementById('search-results')
     if (!q) {
-      list.innerHTML = ''
+      list.innerHTML = emptySearchResultsHtml()
       return
     }
     try {
@@ -150,6 +150,35 @@ function openSearch() {
 function closeOverlay() {
   els.overlay.classList.add('hidden')
   els.overlay.innerHTML = ''
+}
+
+function messageTo(list, text) {
+  list.innerHTML = `<li class="muted">${text}</li>`
+}
+
+async function useMyLocation() {
+  const list = document.getElementById('search-results')
+  if (!list) return
+  if (!('geolocation' in navigator)) {
+    messageTo(list, 'Geolocation is not available.')
+    return
+  }
+  messageTo(list, 'Detecting your location…')
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      const { latitude, longitude } = pos.coords
+      try {
+        const place = (await fetchReverseGeocode({ lat: latitude, lon: longitude }))[0]
+        if (!place) throw new Error('no place')
+        const label = [place.name, place.state, place.country].filter(Boolean).join(', ') || place.name
+        loadWeather({ lat: latitude, lon: longitude, name: label })
+        closeOverlay()
+      } catch {
+        messageTo(list, 'Could not resolve your location.')
+      }
+    },
+    () => messageTo(list, 'Location permission denied.'),
+  )
 }
 
 document.addEventListener('click', (e) => {
@@ -189,6 +218,9 @@ document.addEventListener('click', (e) => {
       break
     case 'close-search':
       closeOverlay()
+      break
+    case 'use-location':
+      useMyLocation()
       break
     case 'pick-location':
       loadWeather({ q: name })
