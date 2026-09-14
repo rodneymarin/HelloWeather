@@ -2,6 +2,7 @@ import { loadState, saveState } from './state.js'
 import { fetchWeather } from './api.js'
 import { renderHero, renderNoData } from './ui/hero.js'
 import { renderHourly } from './ui/hourly.js'
+import { renderDaily } from './ui/daily.js'
 import { renderHeader } from './ui/header.js'
 import { skeleton } from './ui/skeleton.js'
 import { offlineBanner } from './ui/banner.js'
@@ -38,7 +39,7 @@ function render() {
   const units = state.units
   els.hero.innerHTML = (model.stale ? offlineBanner(model) : '') + renderHero(model, units)
   els.hourly.innerHTML = renderHourly(model, units)
-  els.daily.innerHTML = ''
+  els.daily.innerHTML = renderDaily(model, units)
 }
 
 async function loadWeather(payload) {
