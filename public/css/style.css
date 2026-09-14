@@ -185,6 +185,12 @@ footer#app-footer { text-align: center; color: var(--muted); font-size: 0.72rem;
 
 .offline-banner { background: var(--offline-bg); border: 1px solid var(--offline-border); color: var(--offline-text); padding: 8px 12px; border-radius: 10px; margin: 0 0 8px; font-size: 0.85rem; }
 
+.conn-banner {
+  background: #e5484d; color: #fff; text-align: center;
+  padding: 8px 12px; font-size: 0.85rem; font-weight: 600;
+  margin: 0 12px 8px; border-radius: 10px;
+}
+
 .drawer {
   position: fixed; top: 0; left: 0; bottom: 0; width: min(320px, 85vw);
   background: var(--panel); z-index: 60; padding: 18px;

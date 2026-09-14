@@ -5,13 +5,15 @@ import { renderHourly } from './ui/hourly.js'
 import { renderDaily } from './ui/daily.js'
 import { renderHeader } from './ui/header.js'
 import { skeleton } from './ui/skeleton.js'
-import { offlineBanner } from './ui/banner.js'
+import { offlineBanner, connectionBannerHtml } from './ui/banner.js'
 import { showToast } from './ui/toast.js'
 import { searchOverlayHtml, renderSearchResults } from './ui/search.js'
 import { drawerHtml } from './ui/drawer.js'
 
 const state = loadState()
 const systemDark = typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches
+const REFRESH_MS = 10 * 60 * 1000
+let refreshing = false
 
 function applyTheme() {
   document.documentElement.dataset.theme = resolveTheme(state.theme, systemDark)
@@ -27,6 +29,7 @@ const els = {
   toast: document.getElementById('toast'),
   overlay: document.getElementById('overlay'),
   drawer: document.getElementById('drawer'),
+  connBanner: document.getElementById('conn-banner'),
 }
 
 function render() {
@@ -54,6 +57,31 @@ function updateFavoriteButton() {
   if (btn) btn.style.opacity = state.favorites.includes(state.q) ? '1' : '0.35'
 }
 
+function showConnectionBanner(offline) {
+  els.connBanner.innerHTML = connectionBannerHtml(offline)
+}
+
+async function refreshWeather() {
+  if (refreshing) return
+  refreshing = true
+  const q = state.q
+  try {
+    const data = await fetchWeather({ q })
+    if (state.q !== q) return
+    state.data = data
+    if (data.location?.name) state.q = data.location.name
+    if (state.status === 'error') state.status = 'done'
+    saveState(state)
+    showConnectionBanner(false)
+    render()
+    updateFavoriteButton()
+  } catch {
+    showConnectionBanner(true)
+  } finally {
+    refreshing = false
+  }
+}
+
 async function loadWeather(payload) {
   state.status = 'loading'
   if (payload.lat != null) {
@@ -68,8 +96,10 @@ async function loadWeather(payload) {
     state.data = data
     if (data.location?.name) state.q = data.location.name
     if (state.status === 'error') state.status = 'done'
+    showConnectionBanner(false)
   } catch (err) {
     state.status = 'error'
+    showConnectionBanner(true)
     showToast(err.message || 'Could not load weather', 'error')
   } finally {
     state.status = 'done'
@@ -187,3 +217,4 @@ els.overlay.addEventListener('click', (e) => {
   if (e.target === els.overlay) closeOverlay()
 })
 loadWeather({ q: state.q })
+setInterval(refreshWeather, REFRESH_MS)
