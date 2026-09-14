@@ -148,8 +148,8 @@ section { margin: 8px 12px; }
 }
 .hourly-col .hour small { display: block; line-height: 1.2; color: var(--accent); font-size: 0.85em; }
 .hourly-col .wicon { color: var(--accent); }
-.hourly-col .wind { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); }
-.hourly-col .gust { color: var(--orange); }
+.hourly-col .wind { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); white-space: nowrap; }
+.hourly-col .gust { color: var(--orange); white-space: nowrap; }
 
 .temp-area { position: absolute; left: 0; right: 0; bottom: 0; height: var(--temp-area-h); }
 .temp-chart {
