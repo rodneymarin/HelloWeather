@@ -100,9 +100,7 @@ section { margin: 8px 12px; }
 .metric { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--muted); }
 .metric .wicon  { color: var(--accent); }
 .metric.rain .wicon { color: var(--rain); }
-.metric.wind { color: var(--orange); }
-.metric.wind .wicon { color: var(--orange); }
-.metric.gust { color: var(--warm); }
+.metric.gust { color: var(--orange); }
 .metric.uv.low .wicon { color: var(--good); }
 .metric.uv.moderate .wicon { color: #ffd43b; }
 .metric.uv.high .wicon { color: var(--warm); }
