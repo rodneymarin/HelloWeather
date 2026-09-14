@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
 
-const DEFAULT_API_KEY = ''
 const DEFAULT_PORT = 2829
 const DEFAULT_LOCATION = 'Maracaibo'
 
@@ -24,7 +23,7 @@ export function getConfig(env = process.env) {
   const port = Number(raw.PORT ?? DEFAULT_PORT)
   return {
     port: Number.isFinite(port) && port > 0 ? port : DEFAULT_PORT,
-    apiKey: raw.OPENWEATHER_API_KEY || DEFAULT_API_KEY,
+    apiKey: raw.OPENWEATHER_API_KEY || '',
     defaultLocation: raw.DEFAULT_LOCATION || DEFAULT_LOCATION,
   }
 }

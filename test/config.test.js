@@ -12,9 +12,8 @@ test('getConfig defaults port to 2829 when missing or invalid', () => {
   assert.equal(getConfig({ PORT: 'not-a-number', OPENWEATHER_API_KEY: 'k' }).port, 2829)
 })
 
-test('getConfig falls back to CONCEPT.md API key when env missing', () => {
-  const config = getConfig({})
-  assert.equal(config.apiKey, '')
+test('getConfig requires an API key, returning empty when missing', () => {
+  assert.equal(getConfig({}).apiKey, '')
 })
 
 test('getConfig prefers env API key', () => {

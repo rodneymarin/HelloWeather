@@ -18,14 +18,38 @@ backed by OpenWeather data normalized into a small metric model.
 
 ## Requirements
 
-- Node.js >= 18
+- Node.js >= 18 (Linux install below)
 
-## Install
+## Get your own OpenWeather API key
+
+Weather data comes from OpenWeather, and the API requires a personal key.
+Each install needs its own:
+
+1. Create a free account at <https://openweathermap.org/api>
+2. Open the **API keys** page and copy your key
+3. Paste it into a local `.env` file (this file is git-ignored, never commit it):
+
+```bash
+cp .env.example .env
+# edit .env and set: OPENWEATHER_API_KEY=your_key
+```
+
+## Install on Linux
+
+Install Node.js if you don't have it yet (Debian/Ubuntu):
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+Then clone and set up the app:
 
 ```bash
 git clone <repo-url> helloweather
 cd helloweather
 npm install
+cp .env.example .env    # then add your OPENWEATHER_API_KEY
 ```
 
 ## Run
