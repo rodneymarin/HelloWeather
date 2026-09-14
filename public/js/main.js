@@ -1,4 +1,4 @@
-import { loadState, saveState } from './state.js'
+import { loadState, saveState, resolveTheme } from './state.js'
 import { fetchWeather, fetchGeocode } from './api.js'
 import { renderHero, renderNoData } from './ui/hero.js'
 import { renderHourly } from './ui/hourly.js'
@@ -11,6 +11,13 @@ import { searchOverlayHtml, renderSearchResults } from './ui/search.js'
 import { drawerHtml } from './ui/drawer.js'
 
 const state = loadState()
+const systemDark = typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches
+
+function applyTheme() {
+  document.documentElement.dataset.theme = resolveTheme(state.theme, systemDark)
+}
+
+applyTheme()
 
 const els = {
   header: document.getElementById('app-header'),
@@ -37,10 +44,9 @@ function render() {
     return
   }
   const model = state.data
-  const units = state.units
-  els.hero.innerHTML = (model.stale ? offlineBanner(model) : '') + renderHero(model, units)
-  els.hourly.innerHTML = renderHourly(model, units)
-  els.daily.innerHTML = renderDaily(model, units)
+  els.hero.innerHTML = (model.stale ? offlineBanner(model) : '') + renderHero(model)
+  els.hourly.innerHTML = renderHourly(model)
+  els.daily.innerHTML = renderDaily(model)
 }
 
 function updateFavoriteButton() {
@@ -141,15 +147,10 @@ document.addEventListener('click', (e) => {
     case 'search':
       openSearch()
       break
-    case 'units': {
-      state.units = state.units === 'metric' ? 'imperial' : 'metric'
+    case 'set-theme':
+      state.theme = value
       saveState(state)
-      render()
-      break
-    }
-    case 'set-units':
-      state.units = value
-      saveState(state)
+      applyTheme()
       render()
       openDrawer()
       break

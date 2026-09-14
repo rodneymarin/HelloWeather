@@ -1,11 +1,19 @@
-const KEYS = { units: 'helloweather:units', location: 'helloweather:location', cache: 'helloweather:cache', favorites: 'helloweather:favorites' }
+const KEYS = { theme: 'helloweather:theme', location: 'helloweather:location', cache: 'helloweather:cache', favorites: 'helloweather:favorites' }
 
-export const DEFAULT_STATE = { units: 'metric', q: 'Maracaibo', favorites: [], data: null, status: 'idle' }
+export const DEFAULT_STATE = { theme: 'system', q: 'Maracaibo', favorites: [], data: null, status: 'idle' }
+
+export const THEMES = ['light', 'dark', 'system']
+
+export function resolveTheme(saved, systemIsDark) {
+  if (saved === 'light' || saved === 'dark') return saved
+  return systemIsDark ? 'dark' : 'light'
+}
 
 export function loadState() {
   const s = { ...DEFAULT_STATE }
   try {
-    s.units = localStorage.getItem(KEYS.units) === 'imperial' ? 'imperial' : 'metric'
+    const theme = localStorage.getItem(KEYS.theme)
+    if (THEMES.includes(theme)) s.theme = theme
     const q = localStorage.getItem(KEYS.location)
     if (q) s.q = q
     const cache = localStorage.getItem(KEYS.cache)
@@ -22,7 +30,7 @@ export function loadState() {
 
 export function saveState(s) {
   try {
-    localStorage.setItem(KEYS.units, s.units)
+    localStorage.setItem(KEYS.theme, s.theme)
     localStorage.setItem(KEYS.location, s.q)
     if (s.data) localStorage.setItem(KEYS.cache, JSON.stringify({ data: s.data }))
     localStorage.setItem(KEYS.favorites, JSON.stringify(s.favorites))

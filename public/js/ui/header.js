@@ -9,6 +9,5 @@ export function renderHeader(state, els) {
     </div>
     <div class="header-right">
       <button class="icon-btn" data-action="search" aria-label="Search">${iconSvg('search')}</button>
-      <button class="icon-btn" data-action="units" aria-label="Units">${escapeHtml(state.units === 'metric' ? '°C' : '°F')}</button>
     </div>`
 }

@@ -1,10 +1,11 @@
 import { iconSvg, escapeHtml } from './icons.js'
 
 export function drawerHtml(state) {
-  const unitsRow = `
+  const themeRow = `
     <div class="settings">
-      <button class="seg ${state.units === 'metric' ? 'active' : ''}" data-action="set-units" data-value="metric">Metric °C</button>
-      <button class="seg ${state.units === 'imperial' ? 'active' : ''}" data-action="set-units" data-value="imperial">Imperial °F</button>
+      <button class="seg ${state.theme === 'light' ? 'active' : ''}" data-action="set-theme" data-value="light">Light</button>
+      <button class="seg ${state.theme === 'dark' ? 'active' : ''}" data-action="set-theme" data-value="dark">Dark</button>
+      <button class="seg ${state.theme === 'system' ? 'active' : ''}" data-action="set-theme" data-value="system">System</button>
     </div>`
   const favs = state.favorites.length
     ? state.favorites
@@ -18,7 +19,7 @@ export function drawerHtml(state) {
     </div>
     <div class="drawer-section">Favorites</div>
     <ul class="fav-list">${favs}</ul>
-    <div class="drawer-section">Units</div>
-    ${unitsRow}
+    <div class="drawer-section">Theme</div>
+    ${themeRow}
     <div class="drawer-foot muted">Powered by OpenWeather</div>`
 }
