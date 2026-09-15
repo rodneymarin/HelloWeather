@@ -130,7 +130,7 @@ section { margin: 8px 12px; }
 .metric.uv.high .wicon { color: var(--warm); }
 .metric.uv.extreme .wicon { color: var(--bad); }
 
-.hero-condition { display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 4px; }
+.hero-condition { display: flex; flex-direction: row; align-items: center; gap: 6px; }
 .hero-condition .wicon { width: 40px; height: 40px; align-self: center; }
 .hero-condition p { font-size: 0.95rem; color: var(--muted); }
 
