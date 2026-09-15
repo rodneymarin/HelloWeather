@@ -55,17 +55,15 @@ test('renderHero groups temperature and metrics together in the top row left-ali
   assert.ok(html.indexOf('class="hero-day"') > right, 'day block stays in the hero-right group')
 })
 
-test('renderHero nests the sun times inside hero-right below the condition/day group', () => {
+test('renderHero places day then condition then sun times inside hero-right', () => {
   const html = renderHero(MODEL, 'metric')
   const right = html.indexOf('class="hero-right"')
-  const group = html.indexOf('class="hero-condition-day"')
-  const condition = html.indexOf('class="hero-condition"')
   const day = html.indexOf('class="hero-day"')
+  const condition = html.indexOf('class="hero-condition"')
   const sun = html.indexOf('class="hero-sun-times"')
-  assert.ok(group > right && day > group, 'condition/day group lives inside hero-right')
-  assert.ok(condition > day, 'condition follows the day inside the group')
-  assert.ok(sun > condition, 'sun times sit below the condition/day group')
-  assert.ok(html.slice(day, condition).includes('</div>'), 'the day block closes before the condition opens')
+  assert.ok(day > right, 'day lives inside hero-right')
+  assert.ok(condition > day, 'condition follows the day')
+  assert.ok(sun > condition, 'sun times follow the condition')
   assert.ok(html.indexOf('hero-sunrise') < html.indexOf('hero-sunset'), 'sunrise precedes sunset')
 })
 
@@ -95,11 +93,7 @@ test('hero-right stacks its groups vertically and right-aligns them', () => {
   assert.match(block, /gap:\s*8px/)
 })
 
-test('hero-condition-day stacks day above condition with a vertical gap', () => {
-  const block = css.match(/\.hero-condition-day\s*\{[^}]+\}/)[0]
-  assert.match(block, /flex-direction:\s*column/)
-  assert.match(block, /gap:\s*8px/)
-})
+
 
 test('hero-top-group keeps temperature and metrics side by side with a 20px gap', () => {
   const block = css.match(/\.hero-top-group\s*\{[^}]+\}/)[0]
