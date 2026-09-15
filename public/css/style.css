@@ -114,7 +114,7 @@ section { margin: 8px 12px; }
 }
 .hero-temp { font-size: 2.94rem; font-weight: 300; line-height: 1; }
 .hero-temp-side { font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
-.hero-day { text-align: right; display: flex; flex-direction: column; line-height: 1.4; }
+.hero-day { display: flex; flex-direction: row; align-items: center; gap: 6px; }
 .hero-day-name { font-size: 1.15rem; font-weight: 600; }
 .hero-day-range { color: var(--muted); }
 

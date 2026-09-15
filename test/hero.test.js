@@ -108,8 +108,8 @@ test('hero-top-group keeps temperature and metrics side by side with a 20px gap'
   assert.match(block, /align-items:\s*flex-start/)
 })
 
-test('hero-condition lays out icon and text horizontally', () => {
-  const block = css.match(/\.hero-condition\s*\{[^}]+\}/)[0]
+test('hero-day lays out name and range horizontally', () => {
+  const block = css.match(/\.hero-day\s*\{[^}]+\}/)[0]
   assert.match(block, /flex-direction:\s*row/)
   assert.match(block, /align-items:\s*center/)
 })
