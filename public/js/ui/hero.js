@@ -29,12 +29,14 @@ export function renderHero(model, units) {
 
   return `
     <div class="hero-top">
-      ${tempGroup}
-      <div class="hero-metrics">
-        <span class="metric">${iconSvg('arrow')} ${formatSpeed(cur.windKmh, units)}</span>
-        <span class="metric">${iconSvg('cloud')} ${cur.humidity}%</span>
-        ${precip}
-        ${uv}
+      <div class="hero-top-group">
+        ${tempGroup}
+        <div class="hero-metrics">
+          <span class="metric">${iconSvg('arrow')} ${formatSpeed(cur.windKmh, units)}</span>
+          <span class="metric">${iconSvg('cloud')} ${cur.humidity}%</span>
+          ${precip}
+          ${uv}
+        </div>
       </div>
       <div class="hero-right">
         <div class="hero-condition-day">

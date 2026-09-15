@@ -102,6 +102,8 @@ section { margin: 8px 12px; }
 .hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; align-self: stretch; }
 .hero-condition-day { display: flex; flex-direction: row; align-items: flex-end; gap: 28px; }
 
+.hero-top-group { display: flex; flex-direction: row; gap: 12px; align-items: flex-start; }
+
 .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
 .hero-temp-group { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .hero-temp-main { display: flex; flex-direction: column; gap: 2px; line-height: 1; }

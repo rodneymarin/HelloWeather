@@ -42,14 +42,16 @@ test('renderHero falls back to the normal temperature without feels-like data', 
   assert.ok(!html.includes('hero-temp-side'), 'no side temperature without feels-like data')
 })
 
-test('renderHero wires the metrics block into the top row next to the temperature', () => {
+test('renderHero groups temperature and metrics together in the top row left-aligned', () => {
   const html = renderHero(MODEL, 'metric')
   const top = html.indexOf('class="hero-top"')
+  const group = html.indexOf('class="hero-top-group"')
   const temp = html.indexOf('class="hero-temp-group"')
   const metrics = html.indexOf('class="hero-metrics"')
   const right = html.indexOf('class="hero-right"')
-  assert.ok(temp > top, 'temperature group opens the top block')
-  assert.ok(metrics > temp && right > metrics, 'metrics sit inside the top row next to the temperature')
+  assert.ok(group > top, 'top group opens the top block')
+  assert.ok(temp > group && metrics > temp, 'temperature and metrics are inside the group in order')
+  assert.ok(right > metrics, 'hero-right sits after the group')
   assert.ok(html.indexOf('class="hero-day"') > right, 'day block stays in the hero-right group')
 })
 
@@ -99,10 +101,12 @@ test('hero-condition-day keeps the condition and day side by side with their ori
   assert.match(block, /gap:\s*28px/)
 })
 
-test('hero-metrics stacks its metrics vertically inside the top row', () => {
-  const metrics = css.match(/\.hero-metrics\s*\{[^}]+\}/)[0]
-  assert.match(metrics, /flex-direction:\s*column/, 'metrics stack vertically')
-  assert.ok(!metrics.includes('margin-top: 12px'), 'no extra top margin now that metrics live in the top row')
+test('hero-top-group keeps temperature and metrics side by side with a 12px gap', () => {
+  const block = css.match(/\.hero-top-group\s*\{[^}]+\}/)[0]
+  assert.match(block, /display:\s*flex/)
+  assert.match(block, /flex-direction:\s*row/)
+  assert.match(block, /gap:\s*12px/)
+  assert.match(block, /align-items:\s*flex-start/)
 })
 
 test('hero-condition centers the icon horizontally over its text', () => {
