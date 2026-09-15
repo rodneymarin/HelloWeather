@@ -1,7 +1,7 @@
 # HelloWeather
 
 A local weather dashboard with a vanilla JS frontend served by Express,
-backed by OpenWeather data normalized into a small metric model.
+backed by Open-Meteo data (no API key required) normalized into a small metric model.
 
 Repository: <https://github.com/rodneymarin/HelloWeather>
 
@@ -22,19 +22,12 @@ Repository: <https://github.com/rodneymarin/HelloWeather>
 
 - Node.js >= 18 (Linux install below)
 
-## Get your own OpenWeather API key
+## Weather data
 
-Weather data comes from OpenWeather, and the API requires a personal key.
-Each install needs its own:
-
-1. Create a free account at <https://openweathermap.org/api>
-2. Open the **API keys** page and copy your key
-3. Paste it into a local `.env` file (this file is git-ignored, never commit it):
-
-```bash
-cp .env.example .env
-# edit .env and set: OPENWEATHER_API_KEY=your_key
-```
+Weather comes from [Open-Meteo](https://open-meteo.com/), whose public API
+requires no key for non-commercial use. Geocoding uses the Open-Meteo
+Geocoding API; the "use my location" reverse lookup falls back to
+OpenStreetMap Nominatim. No account or `.env` setup is needed.
 
 ## Install on Linux
 
@@ -51,7 +44,7 @@ Then clone and set up the app:
 git clone https://github.com/rodneymarin/HelloWeather helloweather
 cd helloweather
 npm install
-cp .env.example .env    # then add your OPENWEATHER_API_KEY
+cp .env.example .env    # optional: override PORT / DEFAULT_LOCATION
 ```
 
 ## Run
@@ -82,7 +75,7 @@ public/            Static frontend (vanilla JS, no build step)
   index.html       single page host
 src/               Server-side modules
   app.js           Express app and API routes
-  openweather.js   OpenWeather client
+  openmeteo.js   Open-Meteo client (forecast, geocoding, reverse geocoding)
   normalize.js     normalizes provider responses
   iploc.js         IP-based location lookup
 config.js          reads config from the environment / .env file
@@ -92,9 +85,6 @@ test/              node --test suite (fixtures under test/fixtures)
 
 ## Data source
 
-Weather comes from OpenWeather. The primary provider is One Call 3.0
-(1-hour granularity, includes UV index). If that API access is not
-available for the account, the service silently falls back to Current
-Weather + Forecast 5-day/3-hour (3-hour steps, no UV). Moon phase is
-computed locally. When the provider is unreachable, the last cached
-result for the location is served with an offline banner.
+Weather comes from Open-Meteo. The forecast endpoint returns current,
+hourly (hourly resolution) and daily (5-day) data in metric units with
+WMO weather codes, normalized into the internal metric model.

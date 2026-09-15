@@ -1,7 +1,7 @@
 {
   "name": "helloweather",
   "version": "0.1.0",
-  "description": "Local weather service with a web GUI backed by OpenWeather",
+  "description": "Local weather service with a web GUI backed by Open-Meteo",
   "type": "module",
   "engines": {
     "node": ">=18"
