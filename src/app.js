@@ -8,12 +8,13 @@ import { getConfig } from '../config.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-export function createApp({ client = createOpenMeteoClient(), ipLocator = createIpLocator(), config = getConfig() } = {}) {
+export function createApp({ client = createOpenMeteoClient(), ipLocator = createIpLocator(), config = getConfig(), middleware = [], publicDir = path.join(__dirname, '..', 'public') } = {}) {
   const app = express()
   const cache = new Map()
 
   app.disable('x-powered-by')
-  app.use(express.static(path.join(__dirname, '..', 'public')))
+  for (const mw of middleware) app.use(mw)
+  app.use(express.static(publicDir))
 
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true })

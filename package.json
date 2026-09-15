@@ -8,13 +8,10 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js",
+    "dev": "NODE_ENV=development node --watch server.js",
     "test": "node --test test/"
   },
   "dependencies": {
     "express": "^4.19.2"
-  },
-  "devDependencies": {
-    "livereload": "^0.10.3"
   }
 }
