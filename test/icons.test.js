@@ -53,7 +53,7 @@ test('renderDaily uses the phase-shaped moon icon', () => {
       minC: 5,
       maxC: 20,
       condition: 'Clear',
-      icon: '01d',
+      icon: 'sun',
       windDeg: 90,
       windKmh: 10,
       precipMm: 0,
@@ -71,7 +71,7 @@ test('renderDaily uses the phase-shaped moon icon', () => {
 test('renderHero uses the phase-shaped moon icon', () => {
   const model = {
     timezone: 'UTC',
-    current: { tempC: 30, windKmh: 10, windDeg: 90, humidity: 60, uvIndex: null, icon: '01d', description: 'Clear' },
+    current: { tempC: 30, windKmh: 10, windDeg: 90, humidity: 60, uvIndex: null, icon: 'sun', description: 'Clear' },
     today: { minC: 25, maxC: 32 },
     sun: { sunriseSec: 1757900000, sunsetSec: 1757940000 },
     updatedAt: 1757900000,
@@ -89,4 +89,14 @@ test('sunrise and sunset icons show a half sun on the horizon with a direction a
   assert.ok(rise.includes('M3 16h18'), 'horizon line')
   assert.ok(rise.includes('M12 4'), 'rise points up')
   assert.ok(set.includes('M12 22'), 'set points down')
+})
+
+test('iconSvg maps icon names and falls back to cloud for unknown', () => {
+  assert.ok(iconSvg('rain').includes('M8 19l-1 3'), 'rain icon')
+  assert.ok(iconSvg('storm').includes('M13 13l-2 4'), 'storm icon')
+  assert.ok(iconSvg('nonsense').includes('M7 18h9'), 'unknown falls back to cloud')
+})
+
+test('OpenWeather-style codes no longer map to specific icons', () => {
+  assert.ok(iconSvg('01d').includes('M7 18h9'), '01d falls back to cloud, not sun')
 })

@@ -21,22 +21,10 @@ const ICON_SVG = {
   wind: '<path d="M3 8h9a3 3 0 1 0-3-3M3 12h14a3 3 0 1 1-3 3M3 16h7a2 2 0 1 1-2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>',
 }
 
-const BY_CODE = {
-  '01': 'sun',
-  '02': 'partcloud',
-  '03': 'cloud',
-  '04': 'cloud',
-  '09': 'rain',
-  '10': 'rain',
-  '11': 'storm',
-  '13': 'snow',
-  '50': 'fog',
-}
-
-export function iconSvg(codeOrName) {
-  const key = String(codeOrName ?? '')
-  const name = BY_CODE[key.slice(0, 2)] ?? (ICON_SVG[key] ? key : 'cloud')
-  return `<svg class="wicon" viewBox="0 0 24 24" aria-hidden="true">${ICON_SVG[name]}</svg>`
+export function iconSvg(name) {
+  const key = String(name ?? '')
+  const icon = ICON_SVG[key] ? key : 'cloud'
+  return `<svg class="wicon" viewBox="0 0 24 24" aria-hidden="true">${ICON_SVG[icon]}</svg>`
 }
 
 export function arrowSvg(deg) {
