@@ -62,10 +62,10 @@ test('renderHero nests the sun times inside hero-right below the condition/day g
   const condition = html.indexOf('class="hero-condition"')
   const day = html.indexOf('class="hero-day"')
   const sun = html.indexOf('class="hero-sun-times"')
-  assert.ok(group > right && condition > group, 'condition/day group lives inside hero-right')
-  assert.ok(day > condition, 'day follows the condition inside the group')
-  assert.ok(sun > day, 'sun times sit below the condition/day group')
-  assert.ok(html.slice(day, sun).includes('</div>'), 'the group closes before the sun times open')
+  assert.ok(group > right && day > group, 'condition/day group lives inside hero-right')
+  assert.ok(condition > day, 'condition follows the day inside the group')
+  assert.ok(sun > condition, 'sun times sit below the condition/day group')
+  assert.ok(html.slice(day, condition).includes('</div>'), 'the day block closes before the condition opens')
   assert.ok(html.indexOf('hero-sunrise') < html.indexOf('hero-sunset'), 'sunrise precedes sunset')
 })
 
@@ -94,10 +94,9 @@ test('hero-right stacks its groups vertically and right-aligns them', () => {
   assert.match(block, /align-items:\s*flex-end/)
 })
 
-test('hero-condition-day keeps the condition and day side by side with their original gap', () => {
+test('hero-condition-day stacks day above condition with a vertical gap', () => {
   const block = css.match(/\.hero-condition-day\s*\{[^}]+\}/)[0]
-  assert.match(block, /flex-direction:\s*row/)
-  assert.match(block, /align-items:\s*flex-end/)
+  assert.match(block, /flex-direction:\s*column/)
   assert.match(block, /gap:\s*28px/)
 })
 
@@ -109,10 +108,10 @@ test('hero-top-group keeps temperature and metrics side by side with a 20px gap'
   assert.match(block, /align-items:\s*flex-start/)
 })
 
-test('hero-condition centers the icon horizontally over its text', () => {
+test('hero-condition lays out icon and text horizontally', () => {
   const block = css.match(/\.hero-condition\s*\{[^}]+\}/)[0]
-  const icon = css.match(/\.hero-condition\s+\.wicon\s*\{[^}]+\}/)[0]
-  assert.match(icon, /align-self:\s*center/, 'icon stays centered over the text')
+  assert.match(block, /flex-direction:\s*row/)
+  assert.match(block, /align-items:\s*center/)
 })
 
 test('hero-right stretches to the full top height so the sun times pin to the bottom', () => {
