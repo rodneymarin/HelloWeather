@@ -81,8 +81,11 @@ export function createApp({ client = createOpenMeteoClient(), ipLocator = create
 
     const cached = cache.get(cacheKey)
     try {
-      const raw = await client.getWeather(coords)
-      const model = normalizeWeather(raw, coords.name || q)
+      const [raw, airRaw] = await Promise.all([
+        client.getWeather(coords),
+        typeof client.getAirQuality === 'function' ? client.getAirQuality(coords) : Promise.resolve(null),
+      ])
+      const model = normalizeWeather(raw, coords.name || q, airRaw)
       cache.set(cacheKey, { model, savedAt: Date.now() })
       res.json(model)
     } catch {

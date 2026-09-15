@@ -1,7 +1,7 @@
 import { test, before, after } from 'node:test'
 import assert from 'node:assert/strict'
 import { createApp } from '../src/app.js'
-import { openmeteoFixture } from './fixtures/openmeteo.js'
+import { openmeteoFixture, airQualityFixture } from './fixtures/openmeteo.js'
 
 const IP_PLACE = { name: 'Maracaibo', state: 'Estado Zulia', country: 'VE', lat: 10.64, lon: -71.61 }
 
@@ -31,6 +31,9 @@ function fakeClient(overrides = {}) {
       }
       return openmeteoFixture
     },
+    async getAirQuality() {
+      return airQualityFixture
+    },
     ...overrides,
   }
 }
@@ -59,6 +62,7 @@ test('serves /api/weather by city name', async () => {
   assert.equal(body.location.name, 'Maracaibo')
   assert.equal(body.source, 'open-meteo')
   assert.equal(body.current.tempC, 30.1)
+  assert.equal(body.airQuality.aqi, 42)
   assert.equal(body.stale, undefined)
 })
 

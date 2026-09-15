@@ -57,7 +57,7 @@ export function buildTempArea(items, units = 'metric') {
 export function renderHourly(model, units = 'metric') {
   const tz = model.timezone
   const items = model.hourly
-  if (!items.length) return '<div class="section-title">Hourly</div><p class="muted">No hourly data.</p>'
+  if (!items.length) return '<p class="muted">No hourly data.</p>'
 
   const cols = items
     .map((h, i) => {
@@ -83,6 +83,5 @@ return `
     .join('')
 
   return `
-    <div class="section-title">Hourly</div>
     <div class="hourly-track"><div class="hourly-track-inner">${cols}<div class="temp-area">${buildTempArea(items, units)}</div></div></div>`
 }

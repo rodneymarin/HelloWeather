@@ -7,12 +7,14 @@ export class ApiError extends Error {
 }
 
 const DEFAULT_FORECAST_URL = 'https://api.open-meteo.com'
+const DEFAULT_AIR_QUALITY_URL = 'https://air-quality-api.open-meteo.com'
 const DEFAULT_GEOCODE_URL = 'https://geocoding-api.open-meteo.com'
 const DEFAULT_REVERSE_URL = 'https://nominatim.openstreetmap.org'
 
 export function createOpenMeteoClient({
   fetchImpl = globalThis.fetch,
   forecastBaseUrl = DEFAULT_FORECAST_URL,
+  airQualityBaseUrl = DEFAULT_AIR_QUALITY_URL,
   geocodeBaseUrl = DEFAULT_GEOCODE_URL,
   reverseBaseUrl = DEFAULT_REVERSE_URL,
 } = {}) {
@@ -38,9 +40,23 @@ export function createOpenMeteoClient({
     return url
   }
 
+  function airQualityUrl({ lat, lon }) {
+    const url = new URL('/v1/air-quality', airQualityBaseUrl)
+    const params = {
+      latitude: lat,
+      longitude: lon,
+      current: 'us_aqi,pm2_5',
+    }
+    for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v))
+    return url
+  }
+
   return {
     async getWeather({ lat, lon }) {
       return request(forecastUrl({ lat, lon }))
+    },
+    async getAirQuality({ lat, lon }) {
+      return request(airQualityUrl({ lat, lon }))
     },
     async geocode(query) {
       const url = new URL('/v1/search', geocodeBaseUrl)

@@ -18,13 +18,20 @@ export function renderHero(model, units) {
     : ''
 
   const hasFeels = cur.feelsLikeC != null
+  const aq = model.airQuality
+  const airBadge = aq
+    ? `<span class="hero-aqi aqi-${aq.cls}" title="Air quality: ${aq.aqi} (${aq.label})">${iconSvg('air')} ${aq.label}</span>`
+    : ''
   const tempGroup = `
     <div class="hero-temp-group">
       <div class="hero-temp-main">
         ${hasFeels ? '<span class="hero-temp-caption">Feels</span>' : ''}
         <span class="hero-temp">${formatTemp(hasFeels ? cur.feelsLikeC : cur.tempC, units)}</span>
       </div>
-      ${hasFeels ? `<span class="hero-temp-side">${formatTemp(cur.tempC, units)}</span>` : ''}
+      <span class="hero-temp-side-row">
+        ${hasFeels ? `<span class="hero-temp-side">${formatTemp(cur.tempC, units)}</span>` : ''}
+        ${airBadge}
+      </span>
     </div>`
 
   return `

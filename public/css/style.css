@@ -104,7 +104,7 @@ section { margin: 8px 12px; }
 .hero-top-group { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
 
 .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-.hero-temp-group { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.hero-temp-group { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
 .hero-temp-main { display: flex; flex-direction: column; gap: 2px; line-height: 1; }
 .hero-temp-caption {
   font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em;
@@ -112,6 +112,13 @@ section { margin: 8px 12px; }
 }
 .hero-temp { font-size: 2.94rem; font-weight: 300; line-height: 1; }
 .hero-temp-side { font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
+.hero-temp-side-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.hero-aqi { display: inline-flex; align-items: center; gap: 1px; font-size: 0.78rem; white-space: nowrap; }
+.hero-aqi .wicon { color: var(--muted); width: 17.6px; height: 17.6px; stroke-width: 1.5; }
+.hero-aqi.aqi-good { color: var(--muted); }
+.hero-aqi.aqi-moderate { color: var(--muted); }
+.hero-aqi.aqi-sensitive, .hero-aqi.aqi-unhealthy { color: var(--muted); }
+.hero-aqi.aqi-very-unhealthy, .hero-aqi.aqi-hazardous { color: var(--muted); }
 .hero-day { display: flex; flex-direction: row; align-items: center; gap: 6px; }
 .hero-day-name { font-size: 1.15rem; font-weight: 600; }
 .hero-day-range { color: var(--muted); }

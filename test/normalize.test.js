@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { normalizeWeather } from '../src/normalize.js'
-import { openmeteoFixture } from './fixtures/openmeteo.js'
+import { openmeteoFixture, airQualityFixture } from './fixtures/openmeteo.js'
 
 test('maps current weather from Open-Meteo', () => {
   const m = normalizeWeather(openmeteoFixture, 'Maracaibo')
@@ -62,6 +62,23 @@ test('current pop falls back to daily max when hourly probability is missing', (
   delete data.hourly.precipitation_probability
   const m = normalizeWeather(data, 'Maracaibo')
   assert.equal(m.current.pop, 0.65)
+})
+
+test('maps air quality AQI into the model with a category label', () => {
+  const m = normalizeWeather(openmeteoFixture, 'Maracaibo', airQualityFixture)
+  assert.equal(m.airQuality.aqi, 42)
+  assert.equal(m.airQuality.label, 'Good')
+  assert.equal(m.airQuality.cls, 'good')
+})
+
+test('airQuality is null when no air quality data is present', () => {
+  const m = normalizeWeather(openmeteoFixture, 'Maracaibo')
+  assert.equal(m.airQuality, null)
+})
+
+test('airQuality is null when us_aqi is missing', () => {
+  const m = normalizeWeather(openmeteoFixture, 'Maracaibo', { current: {} })
+  assert.equal(m.airQuality, null)
 })
 
 test('caps hourly at 48 entries and daily at 5', () => {

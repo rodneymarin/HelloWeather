@@ -41,7 +41,22 @@ function epochFromLocalIso(iso, tzOffsetSec) {
   return Date.parse(`${iso}Z`) / 1000 - tzOffsetSec
 }
 
-export function normalizeWeather(data, placeName = '') {
+const AQI_BANDS = [
+  { max: 50, label: 'Good', cls: 'good' },
+  { max: 100, label: 'Moderate', cls: 'moderate' },
+  { max: 150, label: 'Unhealthy for sensitive groups', cls: 'sensitive' },
+  { max: 200, label: 'Unhealthy', cls: 'unhealthy' },
+  { max: 300, label: 'Very unhealthy', cls: 'very-unhealthy' },
+  { max: Infinity, label: 'Hazardous', cls: 'hazardous' },
+]
+
+function aqiInfo(aqi) {
+  if (aqi == null || !Number.isFinite(aqi)) return null
+  const band = AQI_BANDS.find((b) => aqi <= b.max) ?? AQI_BANDS[AQI_BANDS.length - 1]
+  return { aqi: Math.round(aqi), label: band.label, cls: band.cls }
+}
+
+export function normalizeWeather(data, placeName = '', airData = null) {
   const tz = data.utc_offset_seconds
   const cur = data.current ?? {}
   const cw = wmoInfo(cur.weather_code)
@@ -54,6 +69,7 @@ export function normalizeWeather(data, placeName = '') {
   const uv0 = data.hourly?.uv_index?.[0]
   const dailyPopMax = first(data.daily?.precipitation_probability_max)
   const dailyUvMax = first(data.daily?.uv_index_max)
+  const airInfo = aqiInfo(airData?.current?.us_aqi)
 
   return {
     source: 'open-meteo',
@@ -75,6 +91,7 @@ export function normalizeWeather(data, placeName = '') {
       precipMm: cur.precipitation ?? null,
       pop: pop0 != null ? toFraction(pop0) : toFraction(dailyPopMax),
     },
+    airQuality: airInfo,
     today: d ? { minC: data.daily.temperature_2m_min[0], maxC: data.daily.temperature_2m_max[0] } : null,
     sun: {
       sunriseSec: data.daily?.sunrise?.[0] != null ? epochFromLocalIso(data.daily.sunrise[0], tz) : null,

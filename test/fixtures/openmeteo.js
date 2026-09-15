@@ -1,3 +1,7 @@
+export const airQualityFixture = {
+  current: { us_aqi: 42, pm2_5: 11.4 },
+}
+
 export const openmeteoFixture = {
   latitude: 10.66,
   longitude: -71.61,

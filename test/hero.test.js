@@ -21,6 +21,7 @@ const MODEL = {
   },
   today: { minC: 25, maxC: 34 },
   sun: { sunriseSec: 36000, sunsetSec: 79200 },
+  airQuality: { aqi: 42, label: 'Good', cls: 'good' },
 }
 
 test('renderHero shows the feels-like as the big temperature with a small Feels caption', () => {
@@ -39,7 +40,20 @@ test('renderHero falls back to the normal temperature without feels-like data', 
   const html = renderHero({ ...MODEL, current: { ...MODEL.current, feelsLikeC: null } }, 'metric')
   assert.ok(!html.includes('Feels'), 'no Feels caption without data')
   assert.match(html, /class="hero-temp">30°C<\/span>/, 'big temperature falls back to the normal value')
-  assert.ok(!html.includes('hero-temp-side'), 'no side temperature without feels-like data')
+  assert.ok(!html.includes('class="hero-temp-side"'), 'no side temperature without feels-like data')
+})
+
+test('renderHero shows the air quality value beside the side temperature', () => {
+  const html = renderHero(MODEL, 'metric')
+  assert.match(html, /hero-aqi aqi-good/, 'air quality badge renders with its category class')
+  assert.match(html, /> Good<\/span>/, 'air quality shown as the quality word')
+  assert.ok(!html.includes('AQI'), 'no raw AQI number shown')
+  assert.ok(html.indexOf('hero-temp-side') < html.indexOf('hero-aqi'), 'AQI sits right after the side temperature')
+})
+
+test('renderHero omits the air quality badge when unavailable', () => {
+  const html = renderHero({ ...MODEL, airQuality: null }, 'metric')
+  assert.ok(!html.includes('hero-aqi'), 'no AQI badge without air quality data')
 })
 
 test('renderHero groups temperature and metrics together in the top row left-aligned', () => {
@@ -75,7 +89,7 @@ test('renderHero no longer shows the moon phase metric', () => {
 test('hero-temp-group stacks the side temperature below the main temperature, left-aligned', () => {
   const block = css.match(/\.hero-temp-group\s*\{[^}]+\}/)[0]
   assert.match(block, /flex-direction:\s*column/)
-  assert.match(block, /align-items:\s*flex-start/)
+  assert.match(block, /align-items:\s*stretch/)
   assert.ok(!block.includes('flex-direction: row'), 'no longer side by side')
   assert.ok(!block.includes('align-items: flex-end'), 'no longer right-aligned')
 })

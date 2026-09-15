@@ -28,6 +28,23 @@ test('getWeather builds a forecast URL with open-meteo params', async () => {
   assert.match(url.searchParams.get('daily'), /uv_index_max/)
 })
 
+test('getAirQuality builds an air-quality URL with us_aqi', async () => {
+  const calls = []
+  const client = createOpenMeteoClient({
+    fetchImpl: async (url) => {
+      calls.push(url.toString())
+      return jsonResponse({ current: { us_aqi: 42 } })
+    },
+  })
+  const result = await client.getAirQuality({ lat: 10.66, lon: -71.61 })
+  assert.equal(result.current.us_aqi, 42)
+  const url = new URL(calls[0])
+  assert.equal(url.pathname, '/v1/air-quality')
+  assert.equal(url.searchParams.get('latitude'), '10.66')
+  assert.equal(url.searchParams.get('longitude'), '-71.61')
+  assert.match(url.searchParams.get('current'), /us_aqi/)
+})
+
 test('getWeather propagates non-2xx errors', async () => {
   const client = createOpenMeteoClient({ fetchImpl: async () => jsonResponse({}, 500) })
   await assert.rejects(

@@ -7,7 +7,7 @@ import { iconSvg, arrowSvg, moonPhaseSvg } from './icons.js'
 
 export function renderDaily(model, units) {
   const tz = model.timezone
-  if (!model.daily.length) return '<div class="section-title">Extended</div><p class="muted">No forecast data.</p>'
+  if (!model.daily.length) return '<p class="muted">No forecast data.</p>'
 
   const rows = model.daily
     .map((d) => {
@@ -43,6 +43,5 @@ export function renderDaily(model, units) {
     .join('')
 
   return `
-    <div class="section-title">Extended forecast</div>
     <div class="daily-list">${rows}</div>`
 }
