@@ -14,7 +14,7 @@ export function renderHero(model, units) {
     ? `<span class="metric uv uv-${uvClass(cur.uvIndex)}">${iconSvg('uv')} UV ${cur.uvIndex}</span>`
     : ''
 
-  const precip = (cur.pop > 0) || cur.precipMm != null
+  const precip = (cur.pop > 0) || cur.precipMm
     ? `<span class="metric rain">${iconSvg('drop')} ${formatPrecipProb(cur.precipMm ?? 0, cur.pop, units)}</span>`
     : ''
 

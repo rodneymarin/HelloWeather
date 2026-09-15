@@ -1,6 +1,7 @@
 import { before, after, test } from 'node:test'
 import assert from 'node:assert/strict'
 import { createApp } from '../src/app.js'
+import { drawerHtml } from '../public/js/ui/drawer.js'
 
 let server
 let baseUrl
@@ -28,4 +29,10 @@ test('serves css and js assets', async () => {
     const res = await fetch(`${baseUrl}${path}`)
     assert.equal(res.status, 200)
   }
+})
+
+test('drawer footer credits Open-Meteo, not OpenWeather', () => {
+  const html = drawerHtml({ theme: 'system', favorites: [] })
+  assert.ok(html.includes('Powered by Open-Meteo'))
+  assert.ok(!html.includes('Powered by OpenWeather'))
 })

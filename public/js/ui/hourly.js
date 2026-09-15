@@ -64,11 +64,11 @@ export function renderHourly(model, units = 'metric') {
       const popPct = Math.round((h.pop ?? 0) * 100)
       const hasBar = popPct > 0
       const mm = h.precipMm
-      const foot = hasBar && mm != null
+      const foot = hasBar && mm > 0
         ? `${popPct}% · ${mm.toFixed(1)} mm`
         : hasBar
           ? `${popPct}%`
-          : mm != null
+          : mm > 0
             ? `${mm.toFixed(1)} mm`
             : ''
       return `

@@ -123,3 +123,26 @@ test('renderHero hides the precipitation metric when there is no rain', () => {
   const html = renderHero(model, 'metric')
   assert.ok(!html.includes('metric rain'))
 })
+
+test('renderHero hides the precipitation metric when pop and precipMm are both zero', () => {
+  const model = {
+    timezone: 0,
+    current: { tempC: 30, windKmh: 10, windDeg: 90, humidity: 60, uvIndex: null, icon: 'sun', description: 'Clear', pop: 0, precipMm: 0 },
+    today: { minC: 25, maxC: 32 },
+    sun: { sunriseSec: 1757900000, sunsetSec: 1757940000 },
+  }
+  const html = renderHero(model, 'metric')
+  assert.ok(!html.includes('metric rain'))
+})
+
+test('renderHero keeps the precipitation metric when pop drives it and mm is zero', () => {
+  const model = {
+    timezone: 0,
+    current: { tempC: 30, windKmh: 10, windDeg: 90, humidity: 60, uvIndex: null, icon: 'sun', description: 'Clear', pop: 0.4, precipMm: 0 },
+    today: { minC: 25, maxC: 32 },
+    sun: { sunriseSec: 1757900000, sunsetSec: 1757940000 },
+  }
+  const html = renderHero(model, 'metric')
+  assert.ok(html.includes('class="metric rain"'))
+  assert.ok(html.includes('40%'))
+})

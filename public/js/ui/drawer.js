@@ -21,5 +21,5 @@ export function drawerHtml(state) {
     <ul class="fav-list">${favs}</ul>
     <div class="drawer-section">Theme</div>
     ${themeRow}
-    <div class="drawer-foot muted">Powered by OpenWeather</div>`
+    <div class="drawer-foot muted">Powered by Open-Meteo</div>`
 }

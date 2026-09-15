@@ -56,3 +56,17 @@ test('renderHourly renders a column per hour with pop bar and footer', () => {
   assert.ok(!html.includes('--pop-num: 0'), 'zero-pop column has no bar')
   assert.ok(html.includes('class="pop-foot"></span>'), 'empty footer for dry hour')
 })
+
+test('renderHourly suppresses the mm text when precipitation is zero', () => {
+  const model = {
+    timezone: 0,
+    hourly: [
+      { dt: 0, tempC: 30, icon: 'sun', windKmh: 10, windDeg: 90, gustKmh: 20, pop: 0, precipMm: 0 },
+      { dt: 3600, tempC: 29, icon: 'cloud', windKmh: 8, windDeg: 90, gustKmh: null, pop: 0.4, precipMm: 0 },
+    ],
+  }
+  const html = renderHourly(model, 'metric')
+  assert.ok(html.includes('class="pop-foot"></span>'), 'empty footer when pop and mm are both zero')
+  assert.ok(html.includes('class="pop-foot">40%</span>'), 'percent-only footer when mm is zero')
+  assert.ok(!html.includes('0.0 mm'), 'no zero-millimeter footer text')
+})
