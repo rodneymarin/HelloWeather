@@ -101,11 +101,11 @@ test('hero-condition-day keeps the condition and day side by side with their ori
   assert.match(block, /gap:\s*28px/)
 })
 
-test('hero-top-group keeps temperature and metrics side by side with a 12px gap', () => {
+test('hero-top-group keeps temperature and metrics side by side with a 20px gap', () => {
   const block = css.match(/\.hero-top-group\s*\{[^}]+\}/)[0]
   assert.match(block, /display:\s*flex/)
   assert.match(block, /flex-direction:\s*row/)
-  assert.match(block, /gap:\s*12px/)
+  assert.match(block, /gap:\s*20px/)
   assert.match(block, /align-items:\s*flex-start/)
 })
 
