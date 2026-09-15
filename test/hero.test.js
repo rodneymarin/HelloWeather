@@ -86,11 +86,11 @@ test('hero-sun-times stay side by side in a horizontal row', () => {
   assert.ok(!block.includes('flex-direction: column'), 'no longer stacked vertically')
 })
 
-test('hero-right stacks its groups vertically and right-aligns them', () => {
+test('hero-right stacks its groups vertically and right-aligns them, distributing space evenly', () => {
   const block = css.match(/\.hero-right\s*\{[^}]+\}/)[0]
   assert.match(block, /flex-direction:\s*column/)
   assert.match(block, /align-items:\s*flex-end/)
-  assert.match(block, /gap:\s*8px/)
+  assert.match(block, /justify-content:\s*space-between/)
 })
 
 
@@ -113,7 +113,8 @@ test('hero-right stretches to the full top height so the sun times pin to the bo
   const right = css.match(/\.hero-right\s*\{[^}]+\}/)[0]
   const sun = css.match(/\.hero-sun-times\s*\{[^}]+\}/)[0]
   assert.match(right, /align-self:\s*stretch/, 'hero-right fills the height of the top block')
-  assert.match(sun, /margin-top:\s*auto/, 'sun times pushed down to the bottom of hero-right')
+  assert.match(right, /justify-content:\s*space-between/, 'hero-right distributes space between its children')
+  assert.ok(!sun.includes('margin-top: auto'), 'sun times no longer rely on margin-top auto')
 })
 
 test('hero-right is a vertical stack that right-aligns its groups and keeps sun times aligned to it', () => {
