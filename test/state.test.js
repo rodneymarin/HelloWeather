@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { resolveTheme, DEFAULT_STATE } from '../public/js/state.js'
+import { resolveTheme, DEFAULT_STATE, REFRESH_OPTIONS } from '../public/js/state.js'
 
 test('resolveTheme falls back to system when no saved preference', () => {
   assert.equal(resolveTheme(null, true), 'dark')
@@ -23,4 +23,12 @@ test('DEFAULT_STATE uses system theme', () => {
 
 test('DEFAULT_STATE starts without resolved coordinates', () => {
   assert.equal(DEFAULT_STATE.coords, null)
+})
+
+test('DEFAULT_STATE refreshes every 15 minutes', () => {
+  assert.equal(DEFAULT_STATE.refreshMin, 15)
+})
+
+test('REFRESH_OPTIONS expose 5, 15, 30 and 60 minutes', () => {
+  assert.deepEqual(REFRESH_OPTIONS, [5, 15, 30, 60])
 })

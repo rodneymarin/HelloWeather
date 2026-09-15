@@ -1,6 +1,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { renderHourly, buildTempArea } from '../public/js/ui/hourly.js'
+
+const css = readFileSync(new URL('../public/css/style.css', import.meta.url), 'utf8')
 
 const ITEMS = [
   { dt: 1757844930, tempC: 30, icon: '04d', windKmh: 18, windDeg: 90, gustKmh: 30, pop: 0.2 },
@@ -69,4 +72,12 @@ test('renderHourly suppresses the mm text when precipitation is zero', () => {
   assert.ok(html.includes('class="pop-foot"></span>'), 'empty footer when pop and mm are both zero')
   assert.ok(html.includes('class="pop-foot">40%</span>'), 'percent-only footer when mm is zero')
   assert.ok(!html.includes('0.0 mm'), 'no zero-millimeter footer text')
+})
+
+test('pop bars grow upward from the scrollbar to the old base line', () => {
+  const block = css.match(/\.pop-bar\s*\{[^}]+\}/)[0]
+  assert.match(block, /bottom:\s*0;/, 'bar base sits on the scrollbar')
+  assert.match(block, /height:\s*calc\(var\(--pop-num, 0\)\s*\*\s*\(var\(--temp-area-h\) \+ 36px\) \/ 100\)/, 'bar height scales upward')
+  assert.ok(!block.includes('top: calc(100%'), 'no hanging-from-the-top anchor')
+  assert.ok(block.includes('border-radius: 4px 4px 0 0'), 'rounded on the growing top')
 })

@@ -68,7 +68,7 @@ test('renderDaily uses the phase-shaped moon icon', () => {
   assert.ok(html.includes('First Quarter'), 'phase label kept')
 })
 
-test('renderHero uses the phase-shaped moon icon', () => {
+test('renderHero no longer renders the moon icon', () => {
   const model = {
     timezone: 'UTC',
     current: { tempC: 30, windKmh: 10, windDeg: 90, humidity: 60, uvIndex: null, icon: 'sun', description: 'Clear' },
@@ -77,8 +77,8 @@ test('renderHero uses the phase-shaped moon icon', () => {
     updatedAt: 1757900000,
   }
   const html = renderHero(model, 'metric')
-  assert.ok(html.includes('class="wicon moon"'), 'hero uses shaped moon icon')
-  assert.match(html, /<path class="moon-lit"/, 'hero icon has lit path')
+  assert.ok(!html.includes('class="wicon moon"'), 'hero no longer uses the moon icon')
+  assert.ok(!/moon/i.test(html), 'hero no longer shows any moon phase content')
 })
 
 test('sunrise and sunset icons show a half sun on the horizon with a direction arrow', () => {

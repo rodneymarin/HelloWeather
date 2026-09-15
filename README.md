@@ -16,7 +16,8 @@ Repository: <https://github.com/rodneymarin/HelloWeather>
   fallback
 - Light / dark / system themes
 - Favorites for quick switching between places
-- Works offline with cached data (shown with an offline banner)
+- Works offline with cached data (shown in the top updated bar)
+- Configurable auto-refresh: 5 / 15 / 30 / 60 minutes
 
 ## Requirements
 

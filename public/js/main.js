@@ -6,7 +6,7 @@ import { renderHourly } from './ui/hourly.js'
 import { renderDaily } from './ui/daily.js'
 import { renderHeader } from './ui/header.js'
 import { skeleton } from './ui/skeleton.js'
-import { offlineBanner, connectionBannerHtml } from './ui/banner.js'
+import { cachedLabel, connectionBannerHtml } from './ui/banner.js'
 import { showToast } from './ui/toast.js'
 import { searchOverlayHtml, renderSearchResults, emptySearchResultsHtml } from './ui/search.js'
 import { drawerHtml } from './ui/drawer.js'
@@ -14,8 +14,13 @@ import { updatedLabel } from './lib/datetime.js'
 
 const state = loadState()
 const systemDark = typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches
-const REFRESH_MS = 10 * 60 * 1000
+let refreshTimer = null
 let refreshing = false
+
+function restartRefreshTimer() {
+  if (refreshTimer) clearInterval(refreshTimer)
+  refreshTimer = setInterval(refreshWeather, state.refreshMin * 60 * 1000)
+}
 
 function applyTheme() {
   document.documentElement.dataset.theme = resolveTheme(state.theme, systemDark)
@@ -51,10 +56,10 @@ function render() {
     return
   }
   const model = state.data
-  els.hero.innerHTML = (model.stale ? offlineBanner(model) : '') + renderHero(model)
+  els.hero.innerHTML = renderHero(model)
   els.hourly.innerHTML = renderHourly(model)
   els.daily.innerHTML = renderDaily(model)
-  els.updatedBar.innerHTML = `<span>Updated: ${updatedLabel(model.updatedAt / 1000)}</span>`
+  els.updatedBar.innerHTML = `<span>${model.stale ? cachedLabel(model) : `Updated: ${updatedLabel(model.updatedAt / 1000)}`}</span>`
 }
 
 function updateFavoriteButton() {
@@ -245,6 +250,12 @@ document.addEventListener('click', (e) => {
       render()
       openDrawer()
       break
+    case 'set-refresh':
+      state.refreshMin = Number(value)
+      saveState(state)
+      restartRefreshTimer()
+      openDrawer()
+      break
     case 'close-drawer':
       closeDrawer()
       break
@@ -285,4 +296,4 @@ els.overlay.addEventListener('click', (e) => {
 })
 const hasCoords = typeof state.coords?.lat === 'number' && typeof state.coords?.lon === 'number'
 loadWeather(hasCoords ? { lat: state.coords.lat, lon: state.coords.lon, name: state.q } : { q: state.q })
-setInterval(refreshWeather, REFRESH_MS)
+restartRefreshTimer()

@@ -1,8 +1,10 @@
-const KEYS = { theme: 'helloweather:theme', location: 'helloweather:location', coords: 'helloweather:coords', cache: 'helloweather:cache', favorites: 'helloweather:favorites' }
+const KEYS = { theme: 'helloweather:theme', location: 'helloweather:location', coords: 'helloweather:coords', cache: 'helloweather:cache', favorites: 'helloweather:favorites', refresh: 'helloweather:refresh' }
 
-export const DEFAULT_STATE = { theme: 'system', q: 'Maracaibo', favorites: [], data: null, status: 'idle', coords: null }
+export const DEFAULT_STATE = { theme: 'system', q: 'Maracaibo', favorites: [], data: null, status: 'idle', coords: null, refreshMin: 15 }
 
 export const THEMES = ['light', 'dark', 'system']
+
+export const REFRESH_OPTIONS = [5, 15, 30, 60]
 
 export function resolveTheme(saved, systemIsDark) {
   if (saved === 'light' || saved === 'dark') return saved
@@ -27,6 +29,8 @@ export function loadState() {
       if (c?.data) s.data = c.data
     }
     s.favorites = JSON.parse(localStorage.getItem(KEYS.favorites) || '[]')
+    const refreshMin = Number(localStorage.getItem(KEYS.refresh))
+    if (REFRESH_OPTIONS.includes(refreshMin)) s.refreshMin = refreshMin
   } catch {
     /* corrupted storage: fall back to defaults */
   }
@@ -40,6 +44,7 @@ export function saveState(s) {
     if (s.coords) localStorage.setItem(KEYS.coords, JSON.stringify(s.coords))
     if (s.data) localStorage.setItem(KEYS.cache, JSON.stringify({ data: s.data }))
     localStorage.setItem(KEYS.favorites, JSON.stringify(s.favorites))
+    localStorage.setItem(KEYS.refresh, String(s.refreshMin))
   } catch {
     /* storage unavailable: keep in-memory only */
   }

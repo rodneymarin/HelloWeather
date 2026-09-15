@@ -1,4 +1,5 @@
 import { iconSvg, escapeHtml } from './icons.js'
+import { REFRESH_OPTIONS } from '../state.js'
 
 export function drawerHtml(state) {
   const themeRow = `
@@ -6,6 +7,10 @@ export function drawerHtml(state) {
       <button class="seg ${state.theme === 'light' ? 'active' : ''}" data-action="set-theme" data-value="light">Light</button>
       <button class="seg ${state.theme === 'dark' ? 'active' : ''}" data-action="set-theme" data-value="dark">Dark</button>
       <button class="seg ${state.theme === 'system' ? 'active' : ''}" data-action="set-theme" data-value="system">System</button>
+    </div>`
+  const refreshRow = `
+    <div class="settings">
+      ${REFRESH_OPTIONS.map((m) => `<button class="seg ${state.refreshMin === m ? 'active' : ''}" data-action="set-refresh" data-value="${m}">${m}m</button>`).join('')}
     </div>`
   const favs = state.favorites.length
     ? state.favorites
@@ -21,5 +26,6 @@ export function drawerHtml(state) {
     <ul class="fav-list">${favs}</ul>
     <div class="drawer-section">Theme</div>
     ${themeRow}
-    <div class="drawer-foot muted">Powered by Open-Meteo</div>`
+    <div class="drawer-section">Refresh</div>
+    ${refreshRow}`
 }

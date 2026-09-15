@@ -31,8 +31,15 @@ test('serves css and js assets', async () => {
   }
 })
 
-test('drawer footer credits Open-Meteo, not OpenWeather', () => {
-  const html = drawerHtml({ theme: 'system', favorites: [] })
-  assert.ok(html.includes('Powered by Open-Meteo'))
-  assert.ok(!html.includes('Powered by OpenWeather'))
+test('drawer no longer carries a provider credit line', () => {
+  const html = drawerHtml({ theme: 'system', refreshMin: 15, favorites: [] })
+  assert.ok(!html.includes('Powered by'))
+})
+
+test('drawer offers 5/15/30/60 minute refresh intervals', () => {
+  const html = drawerHtml({ theme: 'system', refreshMin: 15, favorites: [] })
+  for (const m of [5, 15, 30, 60]) {
+    assert.ok(html.includes(`data-action="set-refresh" data-value="${m}"`), `refresh option ${m}m present`)
+  }
+  assert.ok(html.includes('class="seg active" data-action="set-refresh" data-value="15"'), 'active option matches saved interval')
 })
