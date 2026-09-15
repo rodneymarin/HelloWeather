@@ -71,15 +71,14 @@ export function renderHourly(model, units = 'metric') {
           : mm > 0
             ? `${mm.toFixed(1)} mm`
             : ''
-      return `
-      <div class="hourly-col"${hasBar ? ` style="--pop-num: ${popPct}"` : ''}>
-        <div class="pop-bar"></div>
-        <span class="hour">${hourLabel(h.dt, tz)}${marksNewDay(items, i, tz) ? `<small>${dayLabel(h.dt, tz)}</small>` : ''}</span>
-        ${iconSvg(h.icon)}
-        <span class="wind">${arrowSvg(h.windDeg)} ${formatSpeed(h.windKmh, units)}</span>
-        ${h.gustKmh != null ? `<span class="gust">${formatSpeed(h.gustKmh, units)}</span>` : ''}
-        <span class="pop-foot">${foot}</span>
-      </div>`
+return `
+       <div class="hourly-col"${hasBar ? ` style="--pop-num: ${popPct}"` : ''}>
+         <div class="pop-bar"><span class="pop-foot">${foot}</span></div>
+         <span class="hour">${hourLabel(h.dt, tz)}${marksNewDay(items, i, tz) ? `<small>${dayLabel(h.dt, tz)}</small>` : ''}</span>
+         ${iconSvg(h.icon)}
+         <span class="wind">${arrowSvg(h.windDeg)} ${formatSpeed(h.windKmh, units)}</span>
+         ${h.gustKmh != null ? `<span class="gust">${formatSpeed(h.gustKmh, units)}</span>` : ''}
+       </div>`
     })
     .join('')
 

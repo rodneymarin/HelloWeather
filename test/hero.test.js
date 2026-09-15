@@ -29,9 +29,10 @@ test('renderHero shows the feels-like as the big temperature with a small Feels 
   assert.match(html, /class="hero-temp">33°C<\/span>/, 'big temperature is the feels-like value')
 })
 
-test('renderHero shows the normal temperature in small next to the big one', () => {
+test('renderHero shows the normal temperature in small below the big one', () => {
   const html = renderHero(MODEL, 'metric')
-  assert.match(html, /class="hero-temp-side">30°C<\/span>/, 'normal temp shown small beside the big temp')
+  assert.match(html, /class="hero-temp-side">30°C<\/span>/, 'normal temp shown small below the big temp')
+  assert.ok(html.indexOf('class="hero-temp-main"') < html.indexOf('class="hero-temp-side"'), 'side temp renders after the main block')
 })
 
 test('renderHero falls back to the normal temperature without feels-like data', () => {
@@ -41,21 +42,28 @@ test('renderHero falls back to the normal temperature without feels-like data', 
   assert.ok(!html.includes('hero-temp-side'), 'no side temperature without feels-like data')
 })
 
-test('renderHero places the condition and day together in the top row', () => {
+test('renderHero wires the metrics block into the top row next to the temperature', () => {
   const html = renderHero(MODEL, 'metric')
   const top = html.indexOf('class="hero-top"')
+  const temp = html.indexOf('class="hero-temp-group"')
   const metrics = html.indexOf('class="hero-metrics"')
-  assert.ok(html.indexOf('class="hero-condition"') > top && html.indexOf('class="hero-condition"') < metrics, 'condition lives in the top row')
-  assert.ok(html.indexOf('class="hero-day"') > top && html.indexOf('class="hero-day"') < metrics, 'day block lives in the top row')
+  const right = html.indexOf('class="hero-right"')
+  assert.ok(temp > top, 'temperature group opens the top block')
+  assert.ok(metrics > temp && right > metrics, 'metrics sit inside the top row next to the temperature')
+  assert.ok(html.indexOf('class="hero-day"') > right, 'day block stays in the hero-right group')
 })
 
-test('renderHero keeps the sun times inside the metrics block', () => {
+test('renderHero nests the sun times inside hero-right below the condition/day group', () => {
   const html = renderHero(MODEL, 'metric')
-  const start = html.indexOf('class="hero-metrics"')
+  const right = html.indexOf('class="hero-right"')
+  const group = html.indexOf('class="hero-condition-day"')
+  const condition = html.indexOf('class="hero-condition"')
+  const day = html.indexOf('class="hero-day"')
   const sun = html.indexOf('class="hero-sun-times"')
-  const between = html.slice(start, sun)
-  assert.ok(sun > start, 'sun times come after the metrics block opener')
-  assert.ok(!between.includes('</div>'), 'sun times are nested inside the metrics block')
+  assert.ok(group > right && condition > group, 'condition/day group lives inside hero-right')
+  assert.ok(day > condition, 'day follows the condition inside the group')
+  assert.ok(sun > day, 'sun times sit below the condition/day group')
+  assert.ok(html.slice(day, sun).includes('</div>'), 'the group closes before the sun times open')
   assert.ok(html.indexOf('hero-sunrise') < html.indexOf('hero-sunset'), 'sunrise precedes sunset')
 })
 
@@ -64,29 +72,37 @@ test('renderHero no longer shows the moon phase metric', () => {
   assert.ok(!/moon/i.test(html))
 })
 
-test('hero-temp-group anchors the side temperature to the base of the big temperature', () => {
+test('hero-temp-group stacks the side temperature below the main temperature, left-aligned', () => {
   const block = css.match(/\.hero-temp-group\s*\{[^}]+\}/)[0]
-  assert.match(block, /align-items:\s*flex-end/)
-  assert.ok(!block.includes('align-items: center'))
+  assert.match(block, /flex-direction:\s*column/)
+  assert.match(block, /align-items:\s*flex-start/)
+  assert.ok(!block.includes('flex-direction: row'), 'no longer side by side')
+  assert.ok(!block.includes('align-items: flex-end'), 'no longer right-aligned')
 })
 
-test('hero-sun-times sit side by side, right-aligned on the metrics line', () => {
+test('hero-sun-times stay side by side in a horizontal row', () => {
   const block = css.match(/\.hero-sun-times\s*\{[^}]+\}/)[0]
   assert.match(block, /flex-direction:\s*row/)
-  assert.match(block, /justify-content:\s*flex-end/)
   assert.ok(!block.includes('flex-direction: column'), 'no longer stacked vertically')
 })
 
-test('hero-sun-times right-align within the traveling metrics row', () => {
-  const block = css.match(/\.hero-sun-times\s*\{[^}]+\}/)[0]
-  assert.match(block, /margin-left:\s*auto/)
+test('hero-right stacks its groups vertically and right-aligns them', () => {
+  const block = css.match(/\.hero-right\s*\{[^}]+\}/)[0]
+  assert.match(block, /flex-direction:\s*column/)
+  assert.match(block, /align-items:\s*flex-end/)
 })
 
-test('hero separates the metrics group from the top with extra margin', () => {
-  const hero = css.match(/\.hero\s*\{[^}]+\}/)[0]
+test('hero-condition-day keeps the condition and day side by side with their original gap', () => {
+  const block = css.match(/\.hero-condition-day\s*\{[^}]+\}/)[0]
+  assert.match(block, /flex-direction:\s*row/)
+  assert.match(block, /align-items:\s*flex-end/)
+  assert.match(block, /gap:\s*28px/)
+})
+
+test('hero-metrics stacks its metrics vertically inside the top row', () => {
   const metrics = css.match(/\.hero-metrics\s*\{[^}]+\}/)[0]
-  assert.match(hero, /gap:\s*16px/, 'container keeps its base gap')
-  assert.match(metrics, /margin-top:\s*12px/, 'explicit margin lifts the metrics block off the top row')
+  assert.match(metrics, /flex-direction:\s*column/, 'metrics stack vertically')
+  assert.ok(!metrics.includes('margin-top: 12px'), 'no extra top margin now that metrics live in the top row')
 })
 
 test('hero-condition centers the icon horizontally over its text', () => {
@@ -95,9 +111,16 @@ test('hero-condition centers the icon horizontally over its text', () => {
   assert.match(icon, /align-self:\s*center/, 'icon stays centered over the text')
 })
 
-test('hero-right bottom-aligns its group', () => {
+test('hero-right stretches to the full top height so the sun times pin to the bottom', () => {
+  const right = css.match(/\.hero-right\s*\{[^}]+\}/)[0]
+  const sun = css.match(/\.hero-sun-times\s*\{[^}]+\}/)[0]
+  assert.match(right, /align-self:\s*stretch/, 'hero-right fills the height of the top block')
+  assert.match(sun, /margin-top:\s*auto/, 'sun times pushed down to the bottom of hero-right')
+})
+
+test('hero-right is a vertical stack that right-aligns its groups and keeps sun times aligned to it', () => {
   const block = css.match(/\.hero-right\s*\{[^}]+\}/)[0]
+  assert.match(block, /flex-direction:\s*column/)
   assert.match(block, /align-items:\s*flex-end/)
-  assert.match(block, /gap:\s*28px/)
   assert.ok(!block.includes('align-items: flex-start'))
 })

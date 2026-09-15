@@ -94,15 +94,16 @@ section { margin: 8px 12px; }
 
 .hero-sun-times {
   display: flex; flex-direction: row; justify-content: flex-end; align-items: center; gap: 16px;
-  margin-left: auto; font-size: 0.82rem; color: var(--muted);
+  margin-top: auto; font-size: 0.82rem; color: var(--muted);
 }
 .hero-sun-times span { display: inline-flex; align-items: center; gap: 6px; }
 .hero-sun-times .wicon { color: var(--sun); }
 
-.hero-right { display: flex; align-items: flex-end; gap: 28px; }
+.hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; align-self: stretch; }
+.hero-condition-day { display: flex; flex-direction: row; align-items: flex-end; gap: 28px; }
 
 .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-.hero-temp-group { display: flex; align-items: flex-end; gap: 10px; }
+.hero-temp-group { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .hero-temp-main { display: flex; flex-direction: column; gap: 2px; line-height: 1; }
 .hero-temp-caption {
   font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em;
@@ -114,7 +115,7 @@ section { margin: 8px 12px; }
 .hero-day-name { font-size: 1.15rem; font-weight: 600; }
 .hero-day-range { color: var(--muted); }
 
-.hero-metrics { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; }
+.hero-metrics { display: flex; flex-direction: column; gap: 8px; }
 .metric { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--muted); }
 .metric .wicon  { color: var(--accent); }
 .wicon .moon-dark { fill: var(--panel-2); }
@@ -131,7 +132,7 @@ section { margin: 8px 12px; }
 .hero-condition p { font-size: 0.95rem; color: var(--muted); }
 
 .hourly-track {
-  position: relative; overflow-x: auto;
+  position: relative; overflow-x: auto; overflow-y: hidden;
   background: var(--panel); border-radius: var(--radius);
   scrollbar-width: thin;
   scrollbar-color: var(--muted) var(--panel-2);
@@ -144,8 +145,8 @@ section { margin: 8px 12px; }
 }
 .hourly-col {
   position: relative;
-  width: 80px; display: flex; flex-direction: column; align-items: center; gap: 6px;
-  font-size: 0.82rem; padding: 14px 6px calc(var(--temp-area-h) + 40px);
+  width: 80px; display: flex; flex-direction: column; align-items: center; gap: 1px;
+  font-size: 0.82rem; padding: 14px 6px calc((var(--temp-area-h) * 0.8) + 40px);
   border-right: 2px solid var(--bg);
 }
 .hourly-col:last-child { border-right: none; }
@@ -153,13 +154,18 @@ section { margin: 8px 12px; }
 .pop-bar {
   position: absolute; left: 3px; right: 3px;
   bottom: 0;
-  height: calc(var(--pop-num, 0) * (var(--temp-area-h) + 36px) / 100);
+  height: calc((var(--pop-num, 0) * (var(--temp-area-h) + 36px) / 100) + 10px);
   background: var(--pop-bar-bg);
   border-radius: 4px 4px 0 0;
   z-index: 0;
 }
 .pop-foot {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   font-size: 0.68rem; color: var(--muted); white-space: nowrap;
+  text-align: center;
   min-height: 1em; line-height: 1.2;
 }
 .hourly-col .hour {

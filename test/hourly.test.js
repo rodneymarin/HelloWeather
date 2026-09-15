@@ -77,7 +77,7 @@ test('renderHourly suppresses the mm text when precipitation is zero', () => {
 test('pop bars grow upward from the scrollbar to the old base line', () => {
   const block = css.match(/\.pop-bar\s*\{[^}]+\}/)[0]
   assert.match(block, /bottom:\s*0;/, 'bar base sits on the scrollbar')
-  assert.match(block, /height:\s*calc\(var\(--pop-num, 0\)\s*\*\s*\(var\(--temp-area-h\) \+ 36px\) \/ 100\)/, 'bar height scales upward')
+  assert.match(block, /height:\s*calc\(\(var\(--pop-num, 0\)\s*\*\s*\(var\(--temp-area-h\) \+ 36px\) \/ 100\)\s*\+\s*10px\)/, 'bar height scales upward with guard')
   assert.ok(!block.includes('top: calc(100%'), 'no hanging-from-the-top anchor')
   assert.ok(block.includes('border-radius: 4px 4px 0 0'), 'rounded on the growing top')
 })

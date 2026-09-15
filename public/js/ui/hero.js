@@ -30,25 +30,27 @@ export function renderHero(model, units) {
   return `
     <div class="hero-top">
       ${tempGroup}
-      <div class="hero-right">
-        <div class="hero-condition">
-          ${iconSvg(cur.icon)}
-          <p>${cur.description || cur.condition}</p>
-        </div>
-        <div class="hero-day">
-          <span class="hero-day-name">${dayLabel(Math.floor(Date.now() / 1000), tz)}</span>
-          <span class="hero-day-range">${formatTempRange(today.minC, today.maxC, units)}</span>
-        </div>
+      <div class="hero-metrics">
+        <span class="metric">${iconSvg('arrow')} ${formatSpeed(cur.windKmh, units)}</span>
+        <span class="metric">${iconSvg('cloud')} ${cur.humidity}%</span>
+        ${precip}
+        ${uv}
       </div>
-    </div>
-    <div class="hero-metrics">
-      <span class="metric">${iconSvg('arrow')} ${formatSpeed(cur.windKmh, units)}</span>
-      <span class="metric">${iconSvg('cloud')} ${cur.humidity}%</span>
-      ${precip}
-      ${uv}
-      <div class="hero-sun-times">
-        <span class="hero-sunrise">${iconSvg('sunrise')} ${clockLabel(model.sun.sunriseSec, tz)}</span>
-        <span class="hero-sunset">${iconSvg('sunset')} ${clockLabel(model.sun.sunsetSec, tz)}</span>
+      <div class="hero-right">
+        <div class="hero-condition-day">
+          <div class="hero-condition">
+            ${iconSvg(cur.icon)}
+            <p>${cur.description || cur.condition}</p>
+          </div>
+          <div class="hero-day">
+            <span class="hero-day-name">${dayLabel(Math.floor(Date.now() / 1000), tz)}</span>
+            <span class="hero-day-range">${formatTempRange(today.minC, today.maxC, units)}</span>
+          </div>
+        </div>
+        <div class="hero-sun-times">
+          <span class="hero-sunrise">${iconSvg('sunrise')} ${clockLabel(model.sun.sunriseSec, tz)}</span>
+          <span class="hero-sunset">${iconSvg('sunset')} ${clockLabel(model.sun.sunsetSec, tz)}</span>
+        </div>
       </div>
     </div>`
 }
