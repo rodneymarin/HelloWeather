@@ -22,7 +22,7 @@ test('getWeather builds a forecast URL with open-meteo params', async () => {
   assert.equal(url.searchParams.get('longitude'), '-71.61')
   assert.equal(url.searchParams.get('timezone'), 'auto')
   assert.equal(url.searchParams.get('forecast_days'), '5')
-  assert.equal(url.searchParams.get('forecast_hours'), '24')
+  assert.equal(url.searchParams.get('forecast_hours'), '48')
   assert.match(url.searchParams.get('current'), /temperature_2m/)
   assert.match(url.searchParams.get('hourly'), /precipitation_probability/)
   assert.match(url.searchParams.get('daily'), /uv_index_max/)

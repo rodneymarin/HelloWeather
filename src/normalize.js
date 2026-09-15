@@ -47,7 +47,7 @@ export function normalizeWeather(data, placeName = '') {
   const cw = wmoInfo(cur.weather_code)
   const times = data.hourly?.time ?? []
   const dailyTimes = data.daily?.time ?? []
-  const n = Math.min(times.length, 24)
+  const n = Math.min(times.length, 48)
   const d = Math.min(dailyTimes.length, 5)
 
   const pop0 = data.hourly?.precipitation_probability?.[0]

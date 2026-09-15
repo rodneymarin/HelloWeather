@@ -64,16 +64,16 @@ test('current pop falls back to daily max when hourly probability is missing', (
   assert.equal(m.current.pop, 0.65)
 })
 
-test('caps hourly at 24 entries and daily at 5', () => {
+test('caps hourly at 48 entries and daily at 5', () => {
   const data = JSON.parse(JSON.stringify(openmeteoFixture))
-  data.hourly.time = Array.from({ length: 40 }, (_, i) => `2026-09-14T${String(i % 24).padStart(2, '0')}:00`)
-  data.hourly.temperature_2m = Array.from({ length: 40 }, () => 25)
-  data.hourly.weather_code = Array.from({ length: 40 }, () => 0)
+  data.hourly.time = Array.from({ length: 60 }, (_, i) => `2026-09-14T${String(i % 24).padStart(2, '0')}:00`)
+  data.hourly.temperature_2m = Array.from({ length: 60 }, () => 25)
+  data.hourly.weather_code = Array.from({ length: 60 }, () => 0)
   data.daily.time = Array.from({ length: 8 }, (_, i) => `2026-09-${String(14 + i).padStart(2, '0')}`)
   data.daily.temperature_2m_max = Array.from({ length: 8 }, () => 30)
   data.daily.temperature_2m_min = Array.from({ length: 8 }, () => 22)
   data.daily.weather_code = Array.from({ length: 8 }, () => 0)
   const m = normalizeWeather(data, 'Maracaibo')
-  assert.equal(m.hourly.length, 24)
+  assert.equal(m.hourly.length, 48)
   assert.equal(m.daily.length, 5)
 })
