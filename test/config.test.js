@@ -12,12 +12,8 @@ test('getConfig defaults port to 2829 when missing or invalid', () => {
   assert.equal(getConfig({ PORT: 'not-a-number', OPENWEATHER_API_KEY: 'k' }).port, 2829)
 })
 
-test('getConfig requires an API key, returning empty when missing', () => {
-  assert.equal(getConfig({}).apiKey, '')
-})
-
-test('getConfig prefers env API key', () => {
-  assert.equal(getConfig({ OPENWEATHER_API_KEY: 'env-secret' }).apiKey, 'env-secret')
+test('getConfig exposes no API key field', () => {
+  assert.equal('apiKey' in getConfig({}), false)
 })
 
 test('getConfig uses DEFAULT_LOCATION with fallback', () => {

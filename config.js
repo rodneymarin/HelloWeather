@@ -23,7 +23,6 @@ export function getConfig(env = process.env) {
   const port = Number(raw.PORT ?? DEFAULT_PORT)
   return {
     port: Number.isFinite(port) && port > 0 ? port : DEFAULT_PORT,
-    apiKey: raw.OPENWEATHER_API_KEY || '',
     defaultLocation: raw.DEFAULT_LOCATION || DEFAULT_LOCATION,
   }
 }
