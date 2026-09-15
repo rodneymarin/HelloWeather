@@ -1,146 +1,107 @@
 import { moonPhase } from '../public/js/lib/astro.js'
 
-const toKmh = (ms) => ms * 3.6
-
 function first(arr) {
   return Array.isArray(arr) && arr.length ? arr[0] : undefined
 }
 
-function weatherInfo(list) {
-  const w0 = first(list)
-  if (!w0) return { condition: 'Unknown', icon: null, description: '' }
-  return { condition: w0.main, icon: w0.icon, description: w0.description || '' }
+function toFraction(pct) {
+  return pct == null ? 0 : pct / 100
 }
 
-function normalizeOneCall(data, placeName) {
-  const current = data.current
-  const cw = weatherInfo(current.weather)
-  const hourly = (data.hourly || []).slice(0, 48)
-  const daily = (data.daily || []).slice(0, 5)
-  const today = first(daily)
+const WMO_CONDITIONS = {
+  0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+  45: 'Fog', 48: 'Fog',
+  51: 'Drizzle', 53: 'Drizzle', 55: 'Drizzle',
+  56: 'Freezing drizzle', 57: 'Freezing drizzle',
+  61: 'Rain', 63: 'Rain', 65: 'Rain',
+  66: 'Freezing rain', 67: 'Freezing rain',
+  71: 'Snowfall', 73: 'Snowfall', 75: 'Snowfall', 77: 'Snow grains',
+  80: 'Rain showers', 81: 'Rain showers', 82: 'Rain showers',
+  85: 'Snow showers', 86: 'Snow showers',
+  95: 'Thunderstorm', 96: 'Thunderstorm with hail', 99: 'Thunderstorm with hail',
+}
+
+const WMO_ICONS = {
+  0: 'sun', 1: 'sun', 2: 'partcloud', 3: 'cloud',
+  45: 'fog', 48: 'fog',
+  51: 'rain', 53: 'rain', 55: 'rain', 56: 'rain', 57: 'rain',
+  61: 'rain', 63: 'rain', 65: 'rain', 66: 'rain', 67: 'rain',
+  71: 'snow', 73: 'snow', 75: 'snow', 77: 'snow',
+  80: 'rain', 81: 'rain', 82: 'rain',
+  85: 'snow', 86: 'snow',
+  95: 'storm', 96: 'storm', 99: 'storm',
+}
+
+function wmoInfo(code) {
+  if (!Number.isFinite(code)) return { condition: 'Unknown', icon: null, description: '' }
+  return { condition: WMO_CONDITIONS[code] ?? 'Unknown', icon: WMO_ICONS[code] ?? 'cloud', description: '' }
+}
+
+function epochFromLocalIso(iso, tzOffsetSec) {
+  return Date.parse(`${iso}Z`) / 1000 - tzOffsetSec
+}
+
+export function normalizeWeather(data, placeName = '') {
+  const tz = data.utc_offset_seconds
+  const cur = data.current ?? {}
+  const cw = wmoInfo(cur.weather_code)
+  const times = data.hourly?.time ?? []
+  const dailyTimes = data.daily?.time ?? []
+  const n = Math.min(times.length, 24)
+  const d = Math.min(dailyTimes.length, 5)
+
+  const pop0 = data.hourly?.precipitation_probability?.[0]
+  const uv0 = data.hourly?.uv_index?.[0]
+  const dailyPopMax = first(data.daily?.precipitation_probability_max)
+  const dailyUvMax = first(data.daily?.uv_index_max)
 
   return {
-    source: 'onecall',
+    source: 'open-meteo',
     updatedAt: Date.now(),
-    location: { name: placeName, lat: data.lat, lon: data.lon, country: undefined },
-    timezone: data.timezone,
-    current: {
-      tempC: current.temp,
-      condition: cw.condition,
-      icon: cw.icon,
-      description: cw.description,
-      feelsLikeC: current.feels_like,
-      humidity: current.humidity,
-      cloudiness: current.clouds,
-      windKmh: toKmh(current.wind_speed ?? 0),
-      windDeg: current.wind_deg ?? 0,
-      windGustKmh: current.wind_gust != null ? toKmh(current.wind_gust) : null,
-      uvIndex: current.uvi ?? null,
-      precipMm: null,
-    },
-    today: today ? { minC: today.temp.min, maxC: today.temp.max } : null,
-    sun: { sunriseSec: current.sunrise, sunsetSec: current.sunset },
-    hourly: hourly.map((h) => ({
-      dt: h.dt,
-      tempC: h.temp,
-      windKmh: toKmh(h.wind_speed ?? 0),
-      windDeg: h.wind_deg ?? 0,
-      gustKmh: h.wind_gust != null ? toKmh(h.wind_gust) : null,
-      pop: h.pop ?? 0,
-      ...weatherInfo(h.weather),
-    })),
-    daily: daily.map((d) => ({
-      dt: d.dt,
-      minC: d.temp.min,
-      maxC: d.temp.max,
-      windKmh: toKmh(d.wind_speed ?? 0),
-      windDeg: d.wind_deg ?? 0,
-      gustKmh: d.wind_gust != null ? toKmh(d.wind_gust) : null,
-      precipMm: d.rain ?? 0,
-      pop: d.pop ?? 0,
-      uvIndex: d.uvi ?? null,
-      moonPhase: moonPhase(d.dt),
-      ...weatherInfo(d.weather),
-    })),
-  }
-}
-
-function groupByLocalDay(list, tzOffsetSec) {
-  const groups = new Map()
-  for (const item of list) {
-    const key = new Date((item.dt + tzOffsetSec) * 1000).toISOString().slice(0, 10)
-    if (!groups.has(key)) groups.set(key, [])
-    groups.get(key).push(item)
-  }
-  return [...groups.values()]
-}
-
-function nearestNoon(items, tzOffsetSec) {
-  return items.slice().sort((a, b) => {
-    const da = Math.abs(new Date((a.dt + tzOffsetSec) * 1000).getUTCHours() - 12)
-    const db = Math.abs(new Date((b.dt + tzOffsetSec) * 1000).getUTCHours() - 12)
-    return da - db
-  })[0]
-}
-
-function normalizeBasic(data, placeName) {
-  const { current, forecast } = data
-  const tz = forecast.city.timezone
-  const cw = weatherInfo(current.weather)
-  const days = groupByLocalDay(forecast.list, tz).slice(0, 5)
-
-  return {
-    source: 'current-forecast',
-    updatedAt: Date.now(),
-    location: { name: placeName || current.name, lat: current.coord?.lat, lon: current.coord?.lon, country: current.sys?.country },
+    location: { name: placeName, lat: data.latitude, lon: data.longitude, country: undefined },
     timezone: tz,
     current: {
-      tempC: current.main.temp,
+      tempC: cur.temperature_2m,
       condition: cw.condition,
       icon: cw.icon,
       description: cw.description,
-      feelsLikeC: current.main.feels_like,
-      humidity: current.main.humidity,
-      cloudiness: current.clouds?.all ?? null,
-      windKmh: toKmh(current.wind.speed ?? 0),
-      windDeg: current.wind.deg ?? 0,
-      windGustKmh: current.wind.gust != null ? toKmh(current.wind.gust) : null,
-      uvIndex: null,
-      precipMm: current.rain?.['1h'] ?? null,
+      feelsLikeC: cur.apparent_temperature,
+      humidity: cur.relative_humidity_2m,
+      cloudiness: cur.cloud_cover,
+      windKmh: cur.wind_speed_10m ?? 0,
+      windDeg: cur.wind_direction_10m ?? 0,
+      windGustKmh: cur.wind_gusts_10m ?? null,
+      uvIndex: uv0 ?? dailyUvMax ?? null,
+      precipMm: cur.precipitation ?? null,
+      pop: pop0 != null ? toFraction(pop0) : toFraction(dailyPopMax),
     },
-    today: { minC: current.main.temp_min, maxC: current.main.temp_max },
-    sun: { sunriseSec: current.sys.sunrise, sunsetSec: current.sys.sunset },
-    hourly: forecast.list.slice(0, 16).map((h) => ({
-      dt: h.dt,
-      tempC: h.main.temp,
-      windKmh: toKmh(h.wind.speed ?? 0),
-      windDeg: h.wind.deg ?? 0,
-      gustKmh: h.wind.gust != null ? toKmh(h.wind.gust) : null,
-      pop: h.pop ?? 0,
-      ...weatherInfo(h.weather),
+    today: d ? { minC: data.daily.temperature_2m_min[0], maxC: data.daily.temperature_2m_max[0] } : null,
+    sun: {
+      sunriseSec: data.daily?.sunrise?.[0] != null ? epochFromLocalIso(data.daily.sunrise[0], tz) : null,
+      sunsetSec: data.daily?.sunset?.[0] != null ? epochFromLocalIso(data.daily.sunset[0], tz) : null,
+    },
+    hourly: Array.from({ length: n }, (_, i) => ({
+      dt: epochFromLocalIso(times[i], tz),
+      tempC: data.hourly.temperature_2m[i],
+      windKmh: data.hourly.wind_speed_10m?.[i] ?? 0,
+      windDeg: data.hourly.wind_direction_10m?.[i] ?? 0,
+      gustKmh: data.hourly.wind_gusts_10m?.[i] ?? null,
+      precipMm: data.hourly.precipitation?.[i] ?? null,
+      pop: toFraction(data.hourly.precipitation_probability?.[i]),
+      ...wmoInfo(data.hourly.weather_code?.[i]),
     })),
-    daily: days.map((items) => {
-      const noon = nearestNoon(items, tz)
-      const wn = weatherInfo(noon?.weather)
-      return {
-        dt: items[0].dt,
-        minC: Math.min(...items.map((i) => i.main.temp_min ?? i.main.temp)),
-        maxC: Math.max(...items.map((i) => i.main.temp_max ?? i.main.temp)),
-        windKmh: toKmh(noon?.wind.speed ?? 0),
-        windDeg: noon?.wind.deg ?? 0,
-        gustKmh: noon?.wind.gust != null ? toKmh(noon.wind.gust) : null,
-        precipMm: items.reduce((sum, i) => sum + (i.rain?.['3h'] ?? 0), 0),
-        pop: Math.max(...items.map((i) => i.pop ?? 0)),
-        uvIndex: null,
-        moonPhase: moonPhase(items[0].dt),
-        condition: wn.condition,
-        icon: wn.icon,
-      }
-    }),
+    daily: Array.from({ length: d }, (_, i) => ({
+      dt: epochFromLocalIso(dailyTimes[i], tz),
+      minC: data.daily.temperature_2m_min[i],
+      maxC: data.daily.temperature_2m_max[i],
+      windKmh: data.daily.wind_speed_10m_max?.[i] ?? 0,
+      windDeg: data.daily.wind_direction_10m_dominant?.[i] ?? 0,
+      gustKmh: data.daily.wind_gusts_10m_max?.[i] ?? null,
+      precipMm: data.daily.precipitation_sum?.[i] ?? 0,
+      pop: toFraction(data.daily.precipitation_probability_max?.[i]),
+      uvIndex: data.daily.uv_index_max?.[i] ?? null,
+      moonPhase: moonPhase(epochFromLocalIso(dailyTimes[i], tz)),
+      ...wmoInfo(data.daily.weather_code?.[i]),
+    })),
   }
-}
-
-export function normalizeWeather(providerResult, placeName = '') {
-  if (providerResult.source === 'onecall') return normalizeOneCall(providerResult.data, placeName)
-  return normalizeBasic(providerResult.data, placeName)
 }

@@ -1,7 +1,7 @@
 import { test, before, after } from 'node:test'
 import assert from 'node:assert/strict'
 import { createApp } from '../src/app.js'
-import { onecallFixture } from './fixtures/onecall.js'
+import { openmeteoFixture } from './fixtures/openmeteo.js'
 
 const IP_PLACE = { name: 'Maracaibo', state: 'Estado Zulia', country: 'VE', lat: 10.64, lon: -71.61 }
 
@@ -29,7 +29,7 @@ function fakeClient(overrides = {}) {
         state.failures -= 1
         throw new Error('boom')
       }
-      return { source: 'onecall', data: onecallFixture }
+      return openmeteoFixture
     },
     ...overrides,
   }
@@ -39,7 +39,7 @@ let ctx
 let ctxServer
 
 before(async () => {
-  const s = await start(createApp({ client: fakeClient(), config: { port: 0, apiKey: 'k', defaultLocation: 'Maracaibo' } }))
+  const s = await start(createApp({ client: fakeClient(), config: { port: 0, defaultLocation: 'Maracaibo' } }))
   ctx = s
   ctxServer = s.server
 })
@@ -57,8 +57,8 @@ test('serves /api/weather by city name', async () => {
   assert.equal(res.status, 200)
   const body = await res.json()
   assert.equal(body.location.name, 'Maracaibo')
-  assert.equal(body.source, 'onecall')
-  assert.equal(body.current.tempC, 30)
+  assert.equal(body.source, 'open-meteo')
+  assert.equal(body.current.tempC, 30.1)
   assert.equal(body.stale, undefined)
 })
 
@@ -82,10 +82,10 @@ test('/api/weather serves stale cache when provider fails', async () => {
           calls.failures -= 1
           throw new Error('boom')
         }
-        return { source: 'onecall', data: onecallFixture }
+        return openmeteoFixture
       },
     },
-    config: { port: 0, apiKey: 'k', defaultLocation: 'Maracaibo' },
+    config: { port: 0, defaultLocation: 'Maracaibo' },
   })
   const s = await start(app)
   const url = `${s.baseUrl}/api/weather?lat=10.66&lon=-71.61`
@@ -103,7 +103,7 @@ test('/api/weather serves stale cache when provider fails', async () => {
 test('/api/weather returns 502 without cache when provider fails', async () => {
   const client = fakeClient()
   client.state.failures = 1
-  const s = await start(createApp({ client, config: { port: 0, apiKey: 'k', defaultLocation: 'Maracaibo' } }))
+  const s = await start(createApp({ client, config: { port: 0, defaultLocation: 'Maracaibo' } }))
   const res = await fetch(`${s.baseUrl}/api/weather?lat=10.66&lon=-71.61`)
   assert.equal(res.status, 502)
   await new Promise((resolve) => s.server.close(resolve))
@@ -132,7 +132,7 @@ test('/api/location resolves a place from the client IP', async () => {
   const app = createApp({
     client: fakeClient(),
     ipLocator: { resolve: async () => IP_PLACE },
-    config: { port: 0, apiKey: 'k', defaultLocation: 'Maracaibo' },
+    config: { port: 0, defaultLocation: 'Maracaibo' },
   })
   const s = await start(app)
   const res = await fetch(`${s.baseUrl}/api/location`)
@@ -145,7 +145,7 @@ test('/api/location returns 502 when the IP provider fails', async () => {
   const app = createApp({
     client: fakeClient(),
     ipLocator: { resolve: async () => { throw new Error('boom') } },
-    config: { port: 0, apiKey: 'k', defaultLocation: 'Maracaibo' },
+    config: { port: 0, defaultLocation: 'Maracaibo' },
   })
   const s = await start(app)
   const res = await fetch(`${s.baseUrl}/api/location`)

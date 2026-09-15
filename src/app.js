@@ -1,14 +1,14 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
-import { createOpenWeatherClient } from './openweather.js'
+import { createOpenMeteoClient } from './openmeteo.js'
 import { createIpLocator } from './iploc.js'
 import { normalizeWeather } from './normalize.js'
 import { getConfig } from '../config.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-export function createApp({ client = createOpenWeatherClient({}), ipLocator = createIpLocator(), config = getConfig() } = {}) {
+export function createApp({ client = createOpenMeteoClient(), ipLocator = createIpLocator(), config = getConfig() } = {}) {
   const app = express()
   const cache = new Map()
 

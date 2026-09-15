@@ -1,88 +1,79 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { normalizeWeather } from '../src/normalize.js'
-import { onecallFixture } from './fixtures/onecall.js'
-import { basicCurrentFixture } from './fixtures/basic-current.js'
-import { basicForecastFixture } from './fixtures/basic-forecast.js'
+import { openmeteoFixture } from './fixtures/openmeteo.js'
 
-test('normalizes One Call 3.0 payload', () => {
-  const model = normalizeWeather({ source: 'onecall', data: onecallFixture }, 'Maracaibo')
-  assert.equal(model.source, 'onecall')
-  assert.equal(model.location.name, 'Maracaibo')
-  assert.equal(model.timezone, -14400)
-
-  assert.equal(model.current.tempC, 30)
-  assert.equal(model.current.condition, 'Clouds')
-  assert.equal(model.current.humidity, 70)
-  assert.equal(model.current.uvIndex, 8)
-  assert.equal(model.current.windKmh, 18)
-  assert.equal(model.current.windDeg, 90)
-  assert.equal(Math.round(model.current.windGustKmh), 30)
-
-  assert.deepEqual(model.today, { minC: 28, maxC: 35 })
-  assert.equal(model.sun.sunriseSec, 1757808000)
-
-  assert.equal(model.hourly.length, 3)
-  assert.equal(model.hourly[0].tempC, 30)
-  assert.equal(Math.round(model.hourly[0].gustKmh), 30)
-  assert.equal(model.hourly[1].gustKmh, null)
-
-  assert.equal(model.daily.length, 1)
-  const day = model.daily[0]
-  assert.equal(day.minC, 28)
-  assert.equal(day.maxC, 35)
-  assert.equal(Math.round(day.windKmh), 22)
-  assert.equal(day.precipMm, 2.2)
-  assert.equal(day.pop, 0.48)
-  assert.equal(day.uvIndex, 8)
-  assert.ok(day.moonPhase >= 0 && day.moonPhase <= 1)
+test('maps current weather from Open-Meteo', () => {
+  const m = normalizeWeather(openmeteoFixture, 'Maracaibo')
+  assert.equal(m.source, 'open-meteo')
+  assert.equal(m.location.name, 'Maracaibo')
+  assert.equal(m.location.lat, 10.66)
+  assert.equal(m.timezone, -14400)
+  assert.equal(m.current.tempC, 30.1)
+  assert.equal(m.current.feelsLikeC, 33.4)
+  assert.equal(m.current.humidity, 62)
+  assert.equal(m.current.cloudiness, 40)
+  assert.equal(m.current.windKmh, 12.5)
+  assert.equal(m.current.windDeg, 90)
+  assert.equal(m.current.windGustKmh, 28.3)
+  assert.equal(m.current.precipMm, 0.3)
+  assert.equal(m.current.pop, 0.4)
+  assert.equal(m.current.uvIndex, 7.2)
+  assert.equal(m.current.condition, 'Partly cloudy')
+  assert.equal(m.current.icon, 'partcloud')
 })
 
-test('normalizes Current + Forecast fallback payload', () => {
-  const data = { current: basicCurrentFixture, forecast: basicForecastFixture }
-  const model = normalizeWeather({ source: 'current-forecast', data }, 'Maracaibo')
-  assert.equal(model.source, 'current-forecast')
-  assert.equal(model.current.tempC, 30)
-  assert.equal(model.current.uvIndex, null)
-  assert.equal(model.current.windKmh, 18)
-
-  assert.deepEqual(model.today, { minC: 28, maxC: 35 })
-
-  assert.equal(model.hourly.length, 2)
-  assert.equal(model.hourly[0].pop, 0.2)
-  assert.equal(model.hourly[1].gustKmh, null)
-
-  assert.equal(model.daily.length, 1)
-  assert.equal(model.daily[0].minC, 27)
-  assert.equal(model.daily[0].maxC, 31)
-  assert.equal(model.daily[0].precipMm, 2.2)
-  assert.equal(model.daily[0].pop, 0.48)
-  assert.equal(model.daily[0].uvIndex, null)
+test('hourly items use epoch dt, fraction pop and precipitation mm', () => {
+  const m = normalizeWeather(openmeteoFixture, 'Maracaibo')
+  assert.equal(m.hourly.length, 3)
+  const h1 = m.hourly[2]
+  assert.equal(h1.pop, 0.65)
+  assert.equal(h1.precipMm, 1.2)
+  assert.equal(h1.condition, 'Rain')
+  assert.equal(h1.icon, 'rain')
+  const expectedDt = Date.parse('2026-09-14T12:00Z') / 1000 + 14400
+  assert.equal(h1.dt, expectedDt)
 })
 
-test('caps One Call daily forecast at 5 days', () => {
-  const day = onecallFixture.daily[0]
-  const days = Array.from({ length: 7 }, (_, i) => ({
-    ...day,
-    dt: day.dt + i * 86400,
-    temp: { min: 25 + (i % 3), max: 33 + (i % 3) },
-    uvi: i,
-    rain: i,
-  }))
-  const model = normalizeWeather({ source: 'onecall', data: { ...onecallFixture, daily: days } }, 'Maracaibo')
-  assert.equal(model.daily.length, 5)
-  assert.equal(model.hourly.length, 3)
+test('converts local ISO sun times to epoch seconds', () => {
+  const m = normalizeWeather(openmeteoFixture, 'Maracaibo')
+  const expectedSunrise = Date.parse('2026-09-14T06:20Z') / 1000 + 14400
+  assert.equal(m.sun.sunriseSec, expectedSunrise)
+  const expectedSunset = Date.parse('2026-09-14T18:40Z') / 1000 + 14400
+  assert.equal(m.sun.sunsetSec, expectedSunset)
 })
 
-test('caps Current + Forecast daily forecast at 5 days', () => {
-  const list = Array.from({ length: 6 }, (_, i) => ({
-    dt: basicForecastFixture.list[0].dt + i * 86400,
-    main: { temp: 28 + i, temp_min: 26, temp_max: 31 },
-    wind: { speed: 4, deg: 90 },
-    pop: 0.1,
-    weather: [{ main: 'Clouds', icon: '04d' }],
-  }))
-  const data = { current: basicCurrentFixture, forecast: { city: { name: 'Maracaibo', timezone: -14400 }, list } }
-  const model = normalizeWeather({ source: 'current-forecast', data }, 'Maracaibo')
-  assert.equal(model.daily.length, 5)
+test('maps daily forecast with fraction pop, uv max and moon phase', () => {
+  const m = normalizeWeather(openmeteoFixture, 'Maracaibo')
+  assert.equal(m.daily.length, 2)
+  assert.deepEqual(m.today, { minC: 24.8, maxC: 31.2 })
+  const d1 = m.daily[1]
+  assert.equal(d1.minC, 23.9)
+  assert.equal(d1.maxC, 29.5)
+  assert.equal(d1.pop, 0.9)
+  assert.equal(d1.precipMm, 12.2)
+  assert.equal(d1.uvIndex, 7.9)
+  assert.equal(d1.icon, 'rain')
+  assert.ok(Number.isFinite(d1.moonPhase))
+})
+
+test('current pop falls back to daily max when hourly probability is missing', () => {
+  const data = JSON.parse(JSON.stringify(openmeteoFixture))
+  delete data.hourly.precipitation_probability
+  const m = normalizeWeather(data, 'Maracaibo')
+  assert.equal(m.current.pop, 0.65)
+})
+
+test('caps hourly at 24 entries and daily at 5', () => {
+  const data = JSON.parse(JSON.stringify(openmeteoFixture))
+  data.hourly.time = Array.from({ length: 40 }, (_, i) => `2026-09-14T${String(i % 24).padStart(2, '0')}:00`)
+  data.hourly.temperature_2m = Array.from({ length: 40 }, () => 25)
+  data.hourly.weather_code = Array.from({ length: 40 }, () => 0)
+  data.daily.time = Array.from({ length: 8 }, (_, i) => `2026-09-${String(14 + i).padStart(2, '0')}`)
+  data.daily.temperature_2m_max = Array.from({ length: 8 }, () => 30)
+  data.daily.temperature_2m_min = Array.from({ length: 8 }, () => 22)
+  data.daily.weather_code = Array.from({ length: 8 }, () => 0)
+  const m = normalizeWeather(data, 'Maracaibo')
+  assert.equal(m.hourly.length, 24)
+  assert.equal(m.daily.length, 5)
 })
