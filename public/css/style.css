@@ -100,7 +100,7 @@ section { margin: 8px 12px; }
 .hero-sun-times .wicon { color: var(--sun); }
 
 .hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; align-self: stretch; }
-.hero-condition-day { display: flex; flex-direction: column; gap: 2px; }
+.hero-condition-day { display: flex; flex-direction: column; gap: 8px; }
 .hero-condition { display: flex; flex-direction: row; align-items: center; gap: 6px; }
 
 .hero-top-group { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
