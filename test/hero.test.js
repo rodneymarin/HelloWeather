@@ -97,7 +97,7 @@ test('hero-right stacks its groups vertically and right-aligns them', () => {
 test('hero-condition-day stacks day above condition with a vertical gap', () => {
   const block = css.match(/\.hero-condition-day\s*\{[^}]+\}/)[0]
   assert.match(block, /flex-direction:\s*column/)
-  assert.match(block, /gap:\s*28px/)
+  assert.match(block, /gap:\s*2px/)
 })
 
 test('hero-top-group keeps temperature and metrics side by side with a 20px gap', () => {
