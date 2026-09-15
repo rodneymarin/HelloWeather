@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { buildTempArea } from '../public/js/ui/hourly.js'
+import { renderHourly, buildTempArea } from '../public/js/ui/hourly.js'
 
 const ITEMS = [
   { dt: 1757844930, tempC: 30, icon: '04d', windKmh: 18, windDeg: 90, gustKmh: 30, pop: 0.2 },
@@ -39,4 +39,20 @@ test('buildTempArea extends the curve ends near the block edges', () => {
   const d = html.match(/<path d="([^"]+)" \/>/)[1]
   assert.match(d, /^M 1\.50 /)
   assert.match(d, / 98\.50 \d+\.\d+$/)
+})
+
+test('renderHourly renders a column per hour with pop bar and footer', () => {
+  const model = {
+    timezone: 0,
+    hourly: [
+      { dt: 0, tempC: 30, icon: 'sun', windKmh: 10, windDeg: 90, gustKmh: 20, pop: 0.4, precipMm: 1.2 },
+      { dt: 3600, tempC: 29, icon: 'cloud', windKmh: 8, windDeg: 90, gustKmh: null, pop: 0, precipMm: null },
+    ],
+  }
+  const html = renderHourly(model, 'metric')
+  assert.equal((html.match(/class="hourly-col/g) || []).length, 2)
+  assert.ok(html.includes('style="--pop-num: 40"'), 'probability bar height set')
+  assert.ok(html.includes('40% · 1.2 mm'), 'footer with percent and mm')
+  assert.ok(!html.includes('--pop-num: 0'), 'zero-pop column has no bar')
+  assert.ok(html.includes('class="pop-foot"></span>'), 'empty footer for dry hour')
 })

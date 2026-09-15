@@ -60,13 +60,27 @@ export function renderHourly(model, units = 'metric') {
   if (!items.length) return '<div class="section-title">Hourly</div><p class="muted">No hourly data.</p>'
 
   const cols = items
-    .map((h, i) => `
-      <div class="hourly-col">
+    .map((h, i) => {
+      const popPct = Math.round((h.pop ?? 0) * 100)
+      const hasBar = popPct > 0
+      const mm = h.precipMm
+      const foot = hasBar && mm != null
+        ? `${popPct}% · ${mm.toFixed(1)} mm`
+        : hasBar
+          ? `${popPct}%`
+          : mm != null
+            ? `${mm.toFixed(1)} mm`
+            : ''
+      return `
+      <div class="hourly-col"${hasBar ? ` style="--pop-num: ${popPct}"` : ''}>
+        <div class="pop-bar"></div>
         <span class="hour">${hourLabel(h.dt, tz)}${marksNewDay(items, i, tz) ? `<small>${dayLabel(h.dt, tz)}</small>` : ''}</span>
         ${iconSvg(h.icon)}
         <span class="wind">${arrowSvg(h.windDeg)} ${formatSpeed(h.windKmh, units)}</span>
         ${h.gustKmh != null ? `<span class="gust">${formatSpeed(h.gustKmh, units)}</span>` : ''}
-      </div>`)
+        <span class="pop-foot">${foot}</span>
+      </div>`
+    })
     .join('')
 
   return `
