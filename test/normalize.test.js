@@ -10,7 +10,7 @@ test('maps current weather from Open-Meteo', () => {
   assert.equal(m.location.lat, 10.66)
   assert.equal(m.timezone, -14400)
   assert.equal(m.current.tempC, 30.1)
-  assert.equal(m.current.feelsLikeC, 33.4)
+  assert.ok(Math.abs(m.current.feelsLikeC - 36.44) < 0.01)
   assert.equal(m.current.humidity, 62)
   assert.equal(m.current.cloudiness, 40)
   assert.equal(m.current.windKmh, 12.5)

@@ -1,4 +1,5 @@
 import { moonPhase } from '../public/js/lib/astro.js'
+import { feelsLikeC } from './heatindex.js'
 
 function first(arr) {
   return Array.isArray(arr) && arr.length ? arr[0] : undefined
@@ -81,7 +82,7 @@ export function normalizeWeather(data, placeName = '', airData = null) {
       condition: cw.condition,
       icon: cw.icon,
       description: cw.description,
-      feelsLikeC: cur.apparent_temperature,
+      feelsLikeC: feelsLikeC(cur.temperature_2m, cur.relative_humidity_2m, cur.shortwave_radiation),
       humidity: cur.relative_humidity_2m,
       cloudiness: cur.cloud_cover,
       windKmh: cur.wind_speed_10m ?? 0,

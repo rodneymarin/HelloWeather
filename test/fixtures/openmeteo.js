@@ -18,6 +18,7 @@ export const openmeteoFixture = {
     wind_speed_10m: 12.5,
     wind_direction_10m: 90,
     wind_gusts_10m: 28.3,
+    shortwave_radiation: 600,
   },
   hourly: {
     time: ['2026-09-14T10:00', '2026-09-14T11:00', '2026-09-14T12:00'],
