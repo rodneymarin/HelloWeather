@@ -21,11 +21,17 @@ export function renderDaily(model, units) {
       <div class="daily-row">
         <div class="daily-date">${shortDateLabel(d.dt, tz)}</div>
         <div class="daily-metrics">
-          <span class="metric">${arrowSvg(d.windDeg)} ${formatSpeed(d.windKmh, units)}</span>
-          <span class="metric rain">${iconSvg('drop')} ${formatPrecipProb(d.precipMm, d.pop, units)}</span>
-          ${uv}
-          ${gust}
-          <span class="metric">${moonPhaseSvg(d.moonPhase)} ${moonPhaseLabel(d.moonPhase)}</span>
+          <div class="metrics-row">
+            <span class="metric">${arrowSvg(d.windDeg)} ${formatSpeed(d.windKmh, units)}</span>
+            <span class="metric rain">${iconSvg('drop')} ${formatPrecipProb(d.precipMm, d.pop, units)}</span>
+          </div>
+          <div class="metrics-row">
+            ${uv}
+            ${gust}
+          </div>
+          <div class="metrics-row">
+            <span class="metric">${moonPhaseSvg(d.moonPhase)} ${moonPhaseLabel(d.moonPhase)}</span>
+          </div>
         </div>
         <div class="daily-summary">
           ${iconSvg(d.icon)}

@@ -199,7 +199,8 @@ section { margin: 8px 12px; }
   background: var(--panel); border-radius: var(--radius); padding: 12px 14px;
 }
 .daily-date { font-weight: 600; font-size: 0.9rem; }
-.daily-metrics { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.85rem; }
+.daily-metrics { display: flex; flex-direction: column; gap: 2px; font-size: 0.85rem; }
+.metrics-row { display: flex; gap: 12px; }
 .daily-summary { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.8rem; }
 .daily-summary .wicon { width: 30px; height: 30px; color: var(--accent); }
 .daily-range { font-size: 0.95rem; font-weight: 400; }
