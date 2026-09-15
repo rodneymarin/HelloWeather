@@ -100,3 +100,26 @@ test('iconSvg maps icon names and falls back to cloud for unknown', () => {
 test('OpenWeather-style codes no longer map to specific icons', () => {
   assert.ok(iconSvg('01d').includes('M7 18h9'), '01d falls back to cloud, not sun')
 })
+
+test('renderHero shows precipitation probability and mm when present', () => {
+  const model = {
+    timezone: 0,
+    current: { tempC: 30, windKmh: 10, windDeg: 90, humidity: 60, uvIndex: null, icon: 'sun', description: 'Clear', pop: 0.4, precipMm: 1.2 },
+    today: { minC: 25, maxC: 32 },
+    sun: { sunriseSec: 1757900000, sunsetSec: 1757940000 },
+  }
+  const html = renderHero(model, 'metric')
+  assert.ok(html.includes('class="metric rain"'))
+  assert.ok(html.includes('1.2 mm / 40%'))
+})
+
+test('renderHero hides the precipitation metric when there is no rain', () => {
+  const model = {
+    timezone: 0,
+    current: { tempC: 30, windKmh: 10, windDeg: 90, humidity: 60, uvIndex: null, icon: 'sun', description: 'Clear', pop: 0, precipMm: null },
+    today: { minC: 25, maxC: 32 },
+    sun: { sunriseSec: 1757900000, sunsetSec: 1757940000 },
+  }
+  const html = renderHero(model, 'metric')
+  assert.ok(!html.includes('metric rain'))
+})

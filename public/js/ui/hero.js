@@ -1,5 +1,5 @@
 import { formatTemp, formatSpeed } from '../lib/units.js'
-import { formatTempRange } from '../lib/format.js'
+import { formatTempRange, formatPrecipProb } from '../lib/format.js'
 import { dayLabel, clockLabel } from '../lib/datetime.js'
 import { moonPhase, moonPhaseLabel } from '../lib/astro.js'
 import { uvClass } from '../lib/uv.js'
@@ -12,6 +12,10 @@ export function renderHero(model, units) {
 
   const uv = cur.uvIndex != null
     ? `<span class="metric uv uv-${uvClass(cur.uvIndex)}">${iconSvg('uv')} UV ${cur.uvIndex}</span>`
+    : ''
+
+  const precip = (cur.pop > 0) || cur.precipMm != null
+    ? `<span class="metric rain">${iconSvg('drop')} ${formatPrecipProb(cur.precipMm ?? 0, cur.pop, units)}</span>`
     : ''
 
   return `
@@ -30,6 +34,7 @@ export function renderHero(model, units) {
       <div class="hero-metrics">
         <span class="metric">${iconSvg('arrow')} ${formatSpeed(cur.windKmh, units)}</span>
         <span class="metric">${iconSvg('cloud')} ${cur.humidity}%</span>
+        ${precip}
         ${uv}
         <span class="metric">${moonPhaseSvg(moonPhase(Math.floor(Date.now() / 1000)))} ${moonPhaseLabel(moonPhase(Math.floor(Date.now() / 1000)))}</span>
       </div>
