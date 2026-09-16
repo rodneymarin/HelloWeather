@@ -1,5 +1,4 @@
 import { moonPhase } from '../public/js/lib/astro.js'
-import { feelsLikeC } from './heatindex.js'
 
 function first(arr) {
   return Array.isArray(arr) && arr.length ? arr[0] : undefined
@@ -82,7 +81,7 @@ export function normalizeWeather(data, placeName = '', airData = null) {
       condition: cw.condition,
       icon: cw.icon,
       description: cw.description,
-      feelsLikeC: feelsLikeC(cur.temperature_2m, cur.relative_humidity_2m, cur.shortwave_radiation),
+      feelsLikeC: cur.apparent_temperature ?? cur.temperature_2m,
       humidity: cur.relative_humidity_2m,
       cloudiness: cur.cloud_cover,
       windKmh: cur.wind_speed_10m ?? 0,
@@ -106,20 +105,25 @@ export function normalizeWeather(data, placeName = '', airData = null) {
       gustKmh: data.hourly.wind_gusts_10m?.[i] ?? null,
       precipMm: data.hourly.precipitation?.[i] ?? null,
       pop: toFraction(data.hourly.precipitation_probability?.[i]),
+      feelsLikeC: data.hourly.apparent_temperature?.[i] ?? data.hourly.temperature_2m[i],
       ...wmoInfo(data.hourly.weather_code?.[i]),
     })),
-    daily: Array.from({ length: d }, (_, i) => ({
-      dt: epochFromLocalIso(dailyTimes[i], tz),
-      minC: data.daily.temperature_2m_min[i],
-      maxC: data.daily.temperature_2m_max[i],
-      windKmh: data.daily.wind_speed_10m_max?.[i] ?? 0,
-      windDeg: data.daily.wind_direction_10m_dominant?.[i] ?? 0,
-      gustKmh: data.daily.wind_gusts_10m_max?.[i] ?? null,
-      precipMm: data.daily.precipitation_sum?.[i] ?? 0,
-      pop: toFraction(data.daily.precipitation_probability_max?.[i]),
-      uvIndex: data.daily.uv_index_max?.[i] ?? null,
-      moonPhase: moonPhase(epochFromLocalIso(dailyTimes[i], tz)),
-      ...wmoInfo(data.daily.weather_code?.[i]),
-    })),
+    daily: Array.from({ length: d }, (_, i) => {
+      return {
+        dt: epochFromLocalIso(dailyTimes[i], tz),
+        minC: data.daily.temperature_2m_min[i],
+        maxC: data.daily.temperature_2m_max[i],
+        windKmh: data.daily.wind_speed_10m_max?.[i] ?? 0,
+        windDeg: data.daily.wind_direction_10m_dominant?.[i] ?? 0,
+        gustKmh: data.daily.wind_gusts_10m_max?.[i] ?? null,
+        precipMm: data.daily.precipitation_sum?.[i] ?? 0,
+        pop: toFraction(data.daily.precipitation_probability_max?.[i]),
+        uvIndex: data.daily.uv_index_max?.[i] ?? null,
+        feelsLikeMaxC: data.daily.apparent_temperature_max?.[i] ?? data.daily.temperature_2m_max[i],
+        feelsLikeMinC: data.daily.apparent_temperature_min?.[i] ?? data.daily.temperature_2m_min[i],
+        moonPhase: moonPhase(epochFromLocalIso(dailyTimes[i], tz)),
+        ...wmoInfo(data.daily.weather_code?.[i]),
+      }
+    }),
   }
 }

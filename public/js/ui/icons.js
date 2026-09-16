@@ -19,7 +19,7 @@ const ICON_SVG = {
   menu: '<path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   dots: '<circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/>',
   wind: '<path d="M3 8h9a3 3 0 1 0-3-3M3 12h14a3 3 0 1 1-3 3M3 16h7a2 2 0 1 1-2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>',
-  air: '<path d="M2 7c2.5-2 5-2 7.5 0s5 2 7.5 0M2 12c2.5-2 5-2 7.5 0s5 2 7.5 0M2 17c2.5-2 5-2 7.5 0s5 2 7.5 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>',
+  air: '<path d="M12 3C17 5 19 12 12 21 5 12 7 5 12 3z" fill="currentColor"/><path d="M12 5V19M12 9l-3.5-1M12 9l3.5-1M12 13l-3.5-1M12 13l3.5-1M12 16.5l-2.5-.8M12 16.5l2.5-.8" stroke="var(--panel)" stroke-width="1" stroke-linecap="round" fill="none"/>',
 }
 
 export function iconSvg(name) {

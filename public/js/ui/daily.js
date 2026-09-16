@@ -5,6 +5,13 @@ import { moonPhaseLabel } from '../lib/astro.js'
 import { uvClass } from '../lib/uv.js'
 import { iconSvg, arrowSvg, moonPhaseSvg } from './icons.js'
 
+function feelsLikeRange(d, units) {
+  if (d.feelsLikeMinC != null && d.feelsLikeMaxC != null) {
+    return formatTempRange(d.feelsLikeMinC, d.feelsLikeMaxC, units)
+  }
+  return formatTempRange(d.minC, d.maxC, units)
+}
+
 export function renderDaily(model, units) {
   const tz = model.timezone
   if (!model.daily.length) return '<p class="muted">No forecast data.</p>'
@@ -36,7 +43,7 @@ export function renderDaily(model, units) {
         <div class="daily-summary">
           ${iconSvg(d.icon)}
           <span>${d.condition}</span>
-          <span class="daily-range">${formatTempRange(d.minC, d.maxC, units)}</span>
+          <span class="daily-range">${feelsLikeRange(d, units)}</span>
         </div>
       </div>`
     })

@@ -10,7 +10,7 @@ test('maps current weather from Open-Meteo', () => {
   assert.equal(m.location.lat, 10.66)
   assert.equal(m.timezone, -14400)
   assert.equal(m.current.tempC, 30.1)
-  assert.ok(Math.abs(m.current.feelsLikeC - 36.44) < 0.01)
+  assert.ok(Math.abs(m.current.feelsLikeC - 33.4) < 0.01)
   assert.equal(m.current.humidity, 62)
   assert.equal(m.current.cloudiness, 40)
   assert.equal(m.current.windKmh, 12.5)
@@ -31,6 +31,7 @@ test('hourly items use epoch dt, fraction pop and precipitation mm', () => {
   assert.equal(h1.precipMm, 1.2)
   assert.equal(h1.condition, 'Rain')
   assert.equal(h1.icon, 'rain')
+  assert.ok(Math.abs(m.hourly[0].feelsLikeC - 33.4) < 0.01, 'hourly feels-like uses the API apparent temperature')
   const expectedDt = Date.parse('2026-09-14T12:00Z') / 1000 + 14400
   assert.equal(h1.dt, expectedDt)
 })
@@ -54,6 +55,9 @@ test('maps daily forecast with fraction pop, uv max and moon phase', () => {
   assert.equal(d1.precipMm, 12.2)
   assert.equal(d1.uvIndex, 7.9)
   assert.equal(d1.icon, 'rain')
+  assert.ok(Math.abs(m.daily[0].feelsLikeMaxC - 34.1) < 0.01, 'daily max feels-like uses the API apparent temperature')
+  assert.ok(Math.abs(m.daily[0].feelsLikeMinC - 26.3) < 0.01, 'daily min feels-like uses the API apparent temperature')
+  assert.ok(Math.abs(m.daily[1].feelsLikeMinC - 24.5) < 0.01, 'second day min feels-like uses the API apparent temperature')
   assert.ok(Number.isFinite(d1.moonPhase))
 })
 
