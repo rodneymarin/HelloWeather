@@ -21,6 +21,8 @@
   --temp-area-h: 64px;
   --pop-foot-reserve: 36px;
   --pop-bar-bg: rgba(93, 109, 138, 0.16);
+  --scrollbar-thumb: rgba(93, 109, 138, 0.25);
+  --scrollbar-thumb-hover: rgba(93, 109, 138, 0.4);
 }
 
 :root[data-theme="dark"] {
@@ -43,6 +45,8 @@
   --toast-error-bg: #4a1a1a;
   --scrim: rgba(0, 0, 0, 0.5);
   --pop-bar-bg: rgba(147, 164, 192, 0.18);
+  --scrollbar-thumb: rgba(147, 164, 192, 0.25);
+  --scrollbar-thumb-hover: rgba(147, 164, 192, 0.4);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -144,11 +148,12 @@ section { margin: 8px 12px; }
   position: relative; overflow-x: auto; overflow-y: hidden;
   background: var(--panel); border-radius: var(--radius);
   scrollbar-width: thin;
-  scrollbar-color: var(--muted) var(--panel-2);
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
-.hourly-track::-webkit-scrollbar { height: 8px; }
-.hourly-track::-webkit-scrollbar-track { background: var(--panel-2); border-radius: 0 0 var(--radius) var(--radius); }
-.hourly-track::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 4px; }
+.hourly-track::-webkit-scrollbar { height: 6px; }
+.hourly-track::-webkit-scrollbar-track { background: transparent; }
+.hourly-track::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+.hourly-track::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 .hourly-track-inner {
   position: relative; display: flex; width: max-content;
 }
