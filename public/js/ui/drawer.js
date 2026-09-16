@@ -1,5 +1,5 @@
 import { iconSvg, escapeHtml } from './icons.js'
-import { REFRESH_OPTIONS } from '../state.js'
+import { REFRESH_OPTIONS, FEELS_LIKE_OPTIONS } from '../state.js'
 
 export function drawerHtml(state) {
   const themeRow = `
@@ -11,6 +11,10 @@ export function drawerHtml(state) {
   const refreshRow = `
     <div class="settings">
       ${REFRESH_OPTIONS.map((m) => `<button class="seg ${state.refreshMin === m ? 'active' : ''}" data-action="set-refresh" data-value="${m}">${m}m</button>`).join('')}
+    </div>`
+  const feelsLikeRow = `
+    <div class="settings">
+      ${FEELS_LIKE_OPTIONS.map((m) => `<button class="seg ${state.feelsLike === m ? 'active' : ''}" data-action="set-feels-like" data-value="${m}">${m === 'formula' ? 'HelloWeather' : 'OpenMeteo'}</button>`).join('')}
     </div>`
   const favs = state.favorites.length
     ? state.favorites
@@ -27,5 +31,7 @@ export function drawerHtml(state) {
     <div class="drawer-section">Theme</div>
     ${themeRow}
     <div class="drawer-section">Refresh</div>
-    ${refreshRow}`
+    ${refreshRow}
+    <div class="drawer-section">Feels-like</div>
+    ${feelsLikeRow}`
 }

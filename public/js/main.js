@@ -10,6 +10,7 @@ import { cachedLabel, connectionBannerHtml } from './ui/banner.js'
 import { showToast } from './ui/toast.js'
 import { searchOverlayHtml, renderSearchResults, emptySearchResultsHtml } from './ui/search.js'
 import { drawerHtml } from './ui/drawer.js'
+import { applyFeelsLikeModel } from './lib/feelslike.js'
 import { updatedLabel } from './lib/datetime.js'
 
 const state = loadState()
@@ -55,7 +56,7 @@ function render() {
     els.updatedBar.innerHTML = ''
     return
   }
-  const model = state.data
+  const model = applyFeelsLikeModel(state.data, state.feelsLike)
   els.hero.innerHTML = renderHero(model)
   els.hourly.innerHTML = renderHourly(model)
   els.daily.innerHTML = renderDaily(model)
@@ -254,6 +255,12 @@ document.addEventListener('click', (e) => {
       state.refreshMin = Number(value)
       saveState(state)
       restartRefreshTimer()
+      openDrawer()
+      break
+    case 'set-feels-like':
+      state.feelsLike = value
+      saveState(state)
+      render()
       openDrawer()
       break
     case 'close-drawer':

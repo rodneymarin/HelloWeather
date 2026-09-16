@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { resolveTheme, DEFAULT_STATE, REFRESH_OPTIONS } from '../public/js/state.js'
+import { resolveTheme, DEFAULT_STATE, REFRESH_OPTIONS, FEELS_LIKE_OPTIONS } from '../public/js/state.js'
 
 test('resolveTheme falls back to system when no saved preference', () => {
   assert.equal(resolveTheme(null, true), 'dark')
@@ -31,4 +31,12 @@ test('DEFAULT_STATE refreshes every 15 minutes', () => {
 
 test('REFRESH_OPTIONS expose 5, 15, 30 and 60 minutes', () => {
   assert.deepEqual(REFRESH_OPTIONS, [5, 15, 30, 60])
+})
+
+test('DEFAULT_STATE uses the custom feels-like formula', () => {
+  assert.equal(DEFAULT_STATE.feelsLike, 'formula')
+})
+
+test('FEELS_LIKE_OPTIONS offer the custom formula and the API apparent value', () => {
+  assert.deepEqual(FEELS_LIKE_OPTIONS, ['formula', 'api'])
 })

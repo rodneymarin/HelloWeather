@@ -32,6 +32,7 @@ test('hourly items use epoch dt, fraction pop and precipitation mm', () => {
   assert.equal(h1.condition, 'Rain')
   assert.equal(h1.icon, 'rain')
   assert.ok(Math.abs(m.hourly[0].feelsLikeC - 33.4) < 0.01, 'hourly feels-like uses the API apparent temperature')
+  assert.equal(m.hourly[0].humidity, 62, 'hourly items carry relative humidity for the custom feels-like formula')
   const expectedDt = Date.parse('2026-09-14T12:00Z') / 1000 + 14400
   assert.equal(h1.dt, expectedDt)
 })
@@ -58,6 +59,8 @@ test('maps daily forecast with fraction pop, uv max and moon phase', () => {
   assert.ok(Math.abs(m.daily[0].feelsLikeMaxC - 34.1) < 0.01, 'daily max feels-like uses the API apparent temperature')
   assert.ok(Math.abs(m.daily[0].feelsLikeMinC - 26.3) < 0.01, 'daily min feels-like uses the API apparent temperature')
   assert.ok(Math.abs(m.daily[1].feelsLikeMinC - 24.5) < 0.01, 'second day min feels-like uses the API apparent temperature')
+  assert.equal(m.daily[0].humidityMax, 70, 'daily items carry max humidity for the custom feels-like formula')
+  assert.equal(m.daily[0].humidityMin, 88, 'daily items carry min humidity for the custom feels-like formula')
   assert.ok(Number.isFinite(d1.moonPhase))
 })
 

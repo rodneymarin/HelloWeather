@@ -43,3 +43,10 @@ test('drawer offers 5/15/30/60 minute refresh intervals', () => {
   }
   assert.ok(html.includes('class="seg active" data-action="set-refresh" data-value="15"'), 'active option matches saved interval')
 })
+
+test('drawer offers a custom formula and API feels-like option', () => {
+  const html = drawerHtml({ theme: 'system', refreshMin: 15, favorites: [], feelsLike: 'formula' })
+  assert.ok(html.includes('data-action="set-feels-like" data-value="formula">HelloWeather</button>'), 'HelloWeather formula option present')
+  assert.ok(html.includes('data-action="set-feels-like" data-value="api">OpenMeteo</button>'), 'OpenMeteo API option present')
+  assert.ok(html.includes('class="seg active" data-action="set-feels-like" data-value="formula"'), 'active option matches saved feels-like mode')
+})
