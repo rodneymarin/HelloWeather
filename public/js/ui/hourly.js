@@ -12,12 +12,12 @@ function marksNewDay(items, i, tz) {
 function pointAt(items, i) {
   const n = items.length
   const x = ((i + 0.5) / n) * 100
-  const temps = items.map((h) => h.tempC)
+  const temps = items.map((h) => h.feelsLikeC ?? h.tempC)
   const min = Math.min(...temps)
   const max = Math.max(...temps)
   const spread = max - min
   if (spread <= 0) return { x, y: 22 }
-  const y = 12 + (1 - (items[i].tempC - min) / spread) * 20
+  const y = 12 + (1 - ((items[i].feelsLikeC ?? items[i].tempC) - min) / spread) * 20
   return { x, y }
 }
 
@@ -49,7 +49,7 @@ export function buildTempArea(items, units = 'metric') {
     ? `<svg class="temp-chart" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="${path}" /></svg>`
     : ''
   const temps = points
-    .map((pt, i) => `<span class="chart-temp" style="left:${pt.x.toFixed(2)}%;top:${(pt.y / 0.4).toFixed(2)}%">${formatTemp(items[i].tempC, units)}</span>`)
+    .map((pt, i) => `<span class="chart-temp" style="left:${pt.x.toFixed(2)}%;top:${(pt.y / 0.4).toFixed(2)}%">${formatTemp(items[i].feelsLikeC ?? items[i].tempC, units)}</span>`)
     .join('')
   return `${svg}${temps}`
 }
@@ -59,26 +59,24 @@ export function renderHourly(model, units = 'metric') {
   const items = model.hourly
   if (!items.length) return '<p class="muted">No hourly data.</p>'
 
-  const cols = items
+const cols = items
     .map((h, i) => {
       const popPct = Math.round((h.pop ?? 0) * 100)
-      const hasBar = popPct > 0
       const mm = h.precipMm
-      const foot = hasBar && mm > 0
-        ? `${popPct}% · ${mm.toFixed(1)} mm`
-        : hasBar
-          ? `${popPct}%`
-          : mm > 0
-            ? `${mm.toFixed(1)} mm`
-            : ''
+      const barPct = mm > 0 ? Math.min(100, (mm / 3) * 100) : 0
+      const foot = mm > 0
+        ? `<span class="pop-pct">${popPct}%</span><span class="pop-mm">${mm.toFixed(1)} mm</span>`
+        : ''
+      const footEl = foot ? `<span class="pop-foot">${foot}</span>` : ''
+      const barEl = mm > 0 ? `<div class="pop-bar" style="--pop-num: ${barPct}">${footEl}</div>` : ''
 return `
-       <div class="hourly-col"${hasBar ? ` style="--pop-num: ${popPct}"` : ''}>
-         <div class="pop-bar"><span class="pop-foot">${foot}</span></div>
-         <span class="hour">${hourLabel(h.dt, tz)}${marksNewDay(items, i, tz) ? `<small>${dayLabel(h.dt, tz)}</small>` : ''}</span>
-         ${iconSvg(h.icon)}
-         <span class="wind">${arrowSvg(h.windDeg)} ${formatSpeed(h.windKmh, units)}</span>
-         ${h.gustKmh != null ? `<span class="gust">${formatSpeed(h.gustKmh, units)}</span>` : ''}
-       </div>`
+       <div class="hourly-col">
+          ${barEl}
+          <span class="hour">${hourLabel(h.dt, tz)}${marksNewDay(items, i, tz) ? `<small>${dayLabel(h.dt, tz)}</small>` : ''}</span>
+          ${iconSvg(h.icon)}
+          <span class="wind">${arrowSvg(h.windDeg)} ${formatSpeed(h.windKmh, units)}</span>
+          ${h.gustKmh != null && h.gustKmh > 30 ? `<span class="gust">${formatSpeed(h.gustKmh, units)}</span>` : ''}
+        </div>`
     })
     .join('')
 

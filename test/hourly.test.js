@@ -54,13 +54,13 @@ test('renderHourly renders a column per hour with pop bar and footer', () => {
   }
   const html = renderHourly(model, 'metric')
   assert.equal((html.match(/class="hourly-col/g) || []).length, 2)
-  assert.ok(html.includes('style="--pop-num: 40"'), 'probability bar height set')
-  assert.ok(html.includes('40% · 1.2 mm'), 'footer with percent and mm')
-  assert.ok(!html.includes('--pop-num: 0'), 'zero-pop column has no bar')
-  assert.ok(html.includes('class="pop-foot"></span>'), 'empty footer for dry hour')
+  assert.ok(html.includes('style="--pop-num: 40"'), 'bar height based on mm (1.2mm = 40%)')
+  assert.ok(html.includes('40%') && html.includes('1.2 mm'), 'footer with percent and mm')
+  assert.equal((html.match(/class="pop-bar"/g) || []).length, 1, 'only one pop-bar for the rainy hour')
+  assert.equal((html.match(/class="pop-foot"/g) || []).length, 1, 'only one pop-foot for the rainy hour')
 })
 
-test('renderHourly suppresses the mm text when precipitation is zero', () => {
+test('renderHourly suppresses the bar and mm text when precipitation is zero', () => {
   const model = {
     timezone: 0,
     hourly: [
@@ -69,15 +69,20 @@ test('renderHourly suppresses the mm text when precipitation is zero', () => {
     ],
   }
   const html = renderHourly(model, 'metric')
-  assert.ok(html.includes('class="pop-foot"></span>'), 'empty footer when pop and mm are both zero')
-  assert.ok(html.includes('class="pop-foot">40%</span>'), 'percent-only footer when mm is zero')
+  assert.ok(!html.includes('class="pop-bar"'), 'no bar when mm is zero')
+  assert.ok(!html.includes('class="pop-foot"'), 'no footer when mm is zero')
   assert.ok(!html.includes('0.0 mm'), 'no zero-millimeter footer text')
 })
 
-test('pop bars grow upward from the scrollbar to the old base line', () => {
-  const block = css.match(/\.pop-bar\s*\{[^}]+\}/)[0]
-  assert.match(block, /bottom:\s*0;/, 'bar base sits on the scrollbar')
-  assert.match(block, /height:\s*calc\(\(var\(--pop-num, 0\)\s*\*\s*\(var\(--temp-area-h\) \+ 36px\) \/ 100\)\s*\+\s*10px\)/, 'bar height scales upward with guard')
-  assert.ok(!block.includes('top: calc(100%'), 'no hanging-from-the-top anchor')
-  assert.ok(block.includes('border-radius: 4px 4px 0 0'), 'rounded on the growing top')
+test('pop bars and text grow from scrollbar; chart baseline at reserve', () => {
+  const barBlock = css.match(/\.pop-bar\s*\{[^}]+\}/)[0]
+  assert.match(barBlock, /bottom:\s*0;/, 'bar base sits on the scrollbar')
+  assert.match(barBlock, /height:\s*calc\(\(var\(--pop-num, 0\)\s*\*\s*var\(--temp-area-h\)\s*\/\s*100\)\)/, 'bar height scales with temp-area-h (0-5mm scale)')
+  assert.ok(!barBlock.includes('min-height'), 'no min-height; bar starts at zero')
+
+  const footBlock = css.match(/\.pop-foot\s*\{[^}]+\}/)[0]
+  assert.match(footBlock, /bottom:\s*0;/, 'text also starts at scrollbar, moves up with bar')
+
+  const areaBlock = css.match(/\.temp-area\s*\{[^}]+\}/)[0]
+  assert.match(areaBlock, /bottom:\s*var\(--pop-foot-reserve\);/, 'chart baseline at reserve zone')
 })
