@@ -56,6 +56,20 @@ test('renderHero omits the air quality badge when unavailable', () => {
   assert.ok(!html.includes('hero-aqi'), 'no AQI badge without air quality data')
 })
 
+test('renderHero hero-day range uses the feels-like temps when available', () => {
+  const model = {
+    ...MODEL,
+    today: { minC: 25, maxC: 34, feelsLikeMinC: 27, feelsLikeMaxC: 37 },
+  }
+  const html = renderHero(model, 'metric')
+  assert.match(html, /class="hero-day-range">27°C – 37°C<\/span>/, 'day range shows the feels-like min/max')
+})
+
+test('renderHero hero-day range falls back to the actual temps without feels-like data', () => {
+  const html = renderHero(MODEL, 'metric')
+  assert.match(html, /class="hero-day-range">25°C – 34°C<\/span>/, 'day range shows the plain min/max')
+})
+
 test('renderHero groups temperature and metrics together in the top row left-aligned', () => {
   const html = renderHero(MODEL, 'metric')
   const top = html.indexOf('class="hero-top"')

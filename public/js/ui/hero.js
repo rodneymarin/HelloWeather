@@ -8,6 +8,9 @@ export function renderHero(model, units) {
   const cur = model.current
   const tz = model.timezone
   const today = model.today ?? { minC: cur.tempC, maxC: cur.tempC }
+  const dayRange = today.feelsLikeMinC != null && today.feelsLikeMaxC != null
+    ? formatTempRange(today.feelsLikeMinC, today.feelsLikeMaxC, units)
+    : formatTempRange(today.minC, today.maxC, units)
 
   const uv = cur.uvIndex != null
     ? `<span class="metric uv uv-${uvClass(cur.uvIndex)}">${iconSvg('uv')} UV ${cur.uvIndex}</span>`
@@ -48,7 +51,7 @@ export function renderHero(model, units) {
       <div class="hero-right">
         <div class="hero-day">
           <span class="hero-day-name">${dayLabel(Math.floor(Date.now() / 1000), tz)}</span>
-          <span class="hero-day-range">${formatTempRange(today.minC, today.maxC, units)}</span>
+          <span class="hero-day-range">${dayRange}</span>
         </div>
         <div class="hero-condition">
           ${iconSvg(cur.icon)}

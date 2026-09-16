@@ -48,7 +48,14 @@ test('converts local ISO sun times to epoch seconds', () => {
 test('maps daily forecast with fraction pop, uv max and moon phase', () => {
   const m = normalizeWeather(openmeteoFixture, 'Maracaibo')
   assert.equal(m.daily.length, 2)
-  assert.deepEqual(m.today, { minC: 24.8, maxC: 31.2 })
+  assert.deepEqual(m.today, {
+    minC: 24.8,
+    maxC: 31.2,
+    feelsLikeMinC: 26.3,
+    feelsLikeMaxC: 34.1,
+    humidityMin: 88,
+    humidityMax: 70,
+  })
   const d1 = m.daily[1]
   assert.equal(d1.minC, 23.9)
   assert.equal(d1.maxC, 29.5)

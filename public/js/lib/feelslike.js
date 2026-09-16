@@ -44,7 +44,14 @@ function recompute(model) {
     feelsLikeMaxC: d.humidityMin != null ? customFeelsLikeC(d.maxC, d.humidityMin) : d.feelsLikeMaxC,
     feelsLikeMinC: d.humidityMax != null ? customFeelsLikeC(d.minC, d.humidityMax) : d.feelsLikeMinC,
   }))
-  return { ...model, current, hourly, daily }
+  const today = model.today
+    ? {
+        ...model.today,
+        feelsLikeMaxC: model.today.humidityMin != null ? customFeelsLikeC(model.today.maxC, model.today.humidityMin) : model.today.feelsLikeMaxC,
+        feelsLikeMinC: model.today.humidityMax != null ? customFeelsLikeC(model.today.minC, model.today.humidityMax) : model.today.feelsLikeMinC,
+      }
+    : model.today
+  return { ...model, current, hourly, daily, today }
 }
 
 export function applyFeelsLikeModel(model, mode) {

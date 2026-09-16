@@ -55,6 +55,22 @@ test('applyFeelsLikeModel keeps the stored feels-like when humidity is missing',
   assert.equal(out.current.feelsLikeC, model.current.feelsLikeC)
 })
 
+test('applyFeelsLikeModel recomputes the today feels-like range in formula mode', () => {
+  const model = makeModel()
+  const out = applyFeelsLikeModel(model, 'formula')
+  near(out.today.feelsLikeMaxC, customFeelsLikeC(31.2, 88), 0.3)
+  near(out.today.feelsLikeMinC, customFeelsLikeC(24.8, 70), 0.3)
+})
+
+test('applyFeelsLikeModel keeps the today API feels-like when humidity is missing', () => {
+  const model = makeModel()
+  model.today.humidityMax = null
+  model.today.humidityMin = null
+  const out = applyFeelsLikeModel(model, 'formula')
+  assert.equal(out.today.feelsLikeMaxC, model.today.feelsLikeMaxC)
+  assert.equal(out.today.feelsLikeMinC, model.today.feelsLikeMinC)
+})
+
 function makeModel() {
   return {
     timezone: -14400,
@@ -62,6 +78,14 @@ function makeModel() {
       tempC: 30.1,
       humidity: 62,
       feelsLikeC: 33.4,
+    },
+    today: {
+      minC: 24.8,
+      maxC: 31.2,
+      humidityMax: 70,
+      humidityMin: 88,
+      feelsLikeMaxC: 34.1,
+      feelsLikeMinC: 26.3,
     },
     hourly: [
       { tempC: 30.1, humidity: 62, feelsLikeC: 33.4 },

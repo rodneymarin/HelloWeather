@@ -92,7 +92,16 @@ export function normalizeWeather(data, placeName = '', airData = null) {
       pop: pop0 != null ? toFraction(pop0) : toFraction(dailyPopMax),
     },
     airQuality: airInfo,
-    today: d ? { minC: data.daily.temperature_2m_min[0], maxC: data.daily.temperature_2m_max[0] } : null,
+    today: d
+      ? {
+          minC: data.daily.temperature_2m_min[0],
+          maxC: data.daily.temperature_2m_max[0],
+          feelsLikeMinC: data.daily.apparent_temperature_min?.[0] ?? data.daily.temperature_2m_min[0],
+          feelsLikeMaxC: data.daily.apparent_temperature_max?.[0] ?? data.daily.temperature_2m_max[0],
+          humidityMin: data.daily.relative_humidity_2m_min?.[0] ?? null,
+          humidityMax: data.daily.relative_humidity_2m_max?.[0] ?? null,
+        }
+      : null,
     sun: {
       sunriseSec: data.daily?.sunrise?.[0] != null ? epochFromLocalIso(data.daily.sunrise[0], tz) : null,
       sunsetSec: data.daily?.sunset?.[0] != null ? epochFromLocalIso(data.daily.sunset[0], tz) : null,
