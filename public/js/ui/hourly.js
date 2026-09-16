@@ -16,8 +16,9 @@ function pointAt(items, i) {
   const min = Math.min(...temps)
   const max = Math.max(...temps)
   const spread = max - min
-  if (spread <= 0) return { x, y: 22 }
-  const y = 12 + (1 - ((items[i].feelsLikeC ?? items[i].tempC) - min) / spread) * 20
+  const yBottom = 36.875
+  if (spread <= 0) return { x, y: (12 + yBottom) / 2 }
+  const y = 12 + (1 - ((items[i].feelsLikeC ?? items[i].tempC) - min) / spread) * (yBottom - 12)
   return { x, y }
 }
 

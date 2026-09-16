@@ -29,12 +29,12 @@ test('buildTempArea handles a single item without a path', () => {
 
 test('buildTempArea positions temps as area percentages aligned with the line', () => {
   const flat = buildTempArea([ITEMS[0]], 'metric')
-  assert.match(flat, /top:55\.00%/)
+  assert.match(flat, /top:61\.09%/, 'flat temp centered in the usable band (12-36.875)')
 
   const low = [{ ...ITEMS[0], tempC: 20 }]
   const two = buildTempArea([{ ...ITEMS[0], tempC: 30 }, ...low], 'metric')
   const tops = [...two.matchAll(/top:([0-9.]+)%/g)].map((m) => m[1])
-  assert.deepEqual(tops, ['30.00', '80.00'])
+  assert.deepEqual(tops, ['30.00', '92.19'], 'max at top (30%), min 5px above the bottom (92.19%)')
 })
 
 test('buildTempArea extends the curve ends near the block edges', () => {
