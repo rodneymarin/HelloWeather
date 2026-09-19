@@ -12,6 +12,7 @@ export function fetchWeather(payload) {
   if (payload.lat != null) {
     params.set('lat', payload.lat)
     params.set('lon', payload.lon)
+    if (payload.name) params.set('name', payload.name)
   } else {
     params.set('q', payload.q ?? payload.name)
   }

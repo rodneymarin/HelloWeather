@@ -84,9 +84,6 @@ async function refreshWeather() {
     const data = await fetchWeather(payload)
     if (state.q !== q) return
     state.data = data
-    if (typeof data.location?.lat === 'number' && typeof data.location?.lon === 'number') {
-      state.coords = { lat: data.location.lat, lon: data.location.lon }
-    }
     if (data.location?.name) state.q = data.location.name
     if (state.status === 'error') state.status = 'done'
     saveState(state)
@@ -112,9 +109,6 @@ async function loadWeather(payload) {
   try {
     const data = await fetchWeather(payload)
     state.data = data
-    if (typeof data.location?.lat === 'number' && typeof data.location?.lon === 'number') {
-      state.coords = { lat: data.location.lat, lon: data.location.lon }
-    }
     if (data.location?.name) state.q = data.location.name
     if (state.status === 'error') state.status = 'done'
     showConnectionBanner(false)
@@ -301,6 +295,5 @@ els.overlay.addEventListener('click', (e) => {
     closeOverlay()
   }
 })
-const hasCoords = typeof state.coords?.lat === 'number' && typeof state.coords?.lon === 'number'
-loadWeather(hasCoords ? { lat: state.coords.lat, lon: state.coords.lon, name: state.q } : { q: state.q })
+loadWeather({ q: state.q })
 restartRefreshTimer()

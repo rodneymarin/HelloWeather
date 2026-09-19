@@ -54,15 +54,20 @@ export function createApp({ client = createOpenMeteoClient(), ipLocator = create
     res.status(400).json({ error: 'Provide "q" or "lat"+"lon"' })
   })
 
+  function roundCoord(v) {
+    return Math.round(v * 10000) / 10000
+  }
+
   app.get('/api/weather', async (req, res) => {
-    const { q, lat, lon } = req.query
+    const { q, lat, lon, name } = req.query
 
     let coords = null
     let cacheKey = null
 
     if (lat != null && lon != null && !Array.isArray(lat) && !Array.isArray(lon)) {
       coords = { lat: parseFloat(lat), lon: parseFloat(lon) }
-      cacheKey = `${coords.lat},${coords.lon}`
+      if (typeof name === 'string' && name.trim()) coords.name = name.trim()
+      cacheKey = `${roundCoord(coords.lat)},${roundCoord(coords.lon)}`
     } else if (typeof q === 'string' && q.trim()) {
       let geo = null
       try {
